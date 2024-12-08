@@ -97,18 +97,18 @@ const AuthContext = ({ children }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const loggedEmail = { email: currentUser.email };
-        axiosSecure.post("/jwt", loggedEmail).then((res) => {
-          console.log("token response", res.data);
-        });
+        // const loggedEmail = { email: currentUser.email };
+        // axiosSecure.post("/jwt", loggedEmail).then((res) => {
+        //   console.log("token response", res.data);
+        // });
 
         setLoading(false);
       } else {
         setLoading(false);
         setUser(null);
-        axiosSecure.post("/logout").then((res) => {
-          console.log(res.data);
-        });
+        // axiosSecure.post("/logout").then((res) => {
+        //   console.log(res.data);
+        // });
       }
     });
     return () => {

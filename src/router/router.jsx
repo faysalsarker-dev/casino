@@ -1,6 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import Home from "../pages/home/Home";
 import Layout from "../pages/layout/Layout";
+import SpinningWheel from "../pages/games/SpinningWheel";
+import Register from "../pages/auth/Register";
+import Games from "../pages/games/allGames/Games";
 
 
 const router = createBrowserRouter([
@@ -12,9 +15,17 @@ const router = createBrowserRouter([
         {
             index:true,
             element:<Home/>
-        }
+        },
+        {
+            path:'/games',
+            element:<Games/>
+        },
     ],
   },
+  {
+    path:'/register',
+    element:<Register/>
+  }
 
 ]);
 

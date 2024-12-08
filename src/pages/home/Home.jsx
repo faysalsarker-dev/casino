@@ -1,8 +1,9 @@
+import Sliders from "../../components/hero/Sliders";
 
 const Home = () => {
     return (
         <div>
-          home  
+         <Sliders/>
         </div>
     );
 };
