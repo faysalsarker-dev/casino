@@ -7,9 +7,6 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile,
-  GoogleAuthProvider,
-  GithubAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
 
 import useAxios from "../hooks/useAxios/useAxios";
@@ -25,8 +22,6 @@ const AuthContext = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const GoogleProvider = new GoogleAuthProvider();
-  const GithubProvider = new GithubAuthProvider();
 
   // Create user with email and password
   const createUser = async (email, password) => {
@@ -64,21 +59,8 @@ const AuthContext = ({ children }) => {
     return signOut(auth);
   };
 
-  // Google login
-  const googleLogin = async () => {
-    setLoading(true);
-    const result = await signInWithPopup(auth, GoogleProvider);
-    await saveUser(result.user);
-    return result;
-  };
 
-  // Github login
-  const githubLogin = async () => {
-    setLoading(true);
-    const result = await signInWithPopup(auth, GithubProvider);
-    await saveUser(result.user);
-    return result;
-  };
+
 
   // Save user
   const saveUser = async (newUser) => {
@@ -123,9 +105,7 @@ const AuthContext = ({ children }) => {
     logOut,
     loading,
     setLoading,
-    googleLogin,
     setUser,
-    githubLogin,
     profileUpdate
   };
 

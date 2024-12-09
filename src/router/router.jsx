@@ -4,6 +4,10 @@ import Layout from "../pages/layout/Layout";
 import SpinningWheel from "../pages/games/SpinningWheel";
 import Register from "../pages/auth/Register";
 import Games from "../pages/games/allGames/Games";
+import Login from "../pages/auth/Login";
+import Profile from "../pages/profile/Profile";
+import Support from "../pages/support/Support";
+import History from "../pages/history/History";
 
 
 const router = createBrowserRouter([
@@ -24,12 +28,28 @@ const router = createBrowserRouter([
             path:'/spinnig',
             element:<SpinningWheel/>
         },
+        {
+            path:'/profile',
+            element:<Profile/>
+        },
+        {
+            path:'/support',
+            element:<Support/>
+        },
+        {
+            path:'/history',
+            element:<History/>
+        },
     ],
   },
   {
     path:'/register',
     element:<Register/>
-  }
+  },
+  {
+    path:'/login',
+    element:<Login/>
+  },
 
 ]);
 
