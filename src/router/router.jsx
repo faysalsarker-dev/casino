@@ -20,6 +20,10 @@ const router = createBrowserRouter([
             path:'/games',
             element:<Games/>
         },
+        {
+            path:'/spinnig',
+            element:<SpinningWheel/>
+        },
     ],
   },
   {
