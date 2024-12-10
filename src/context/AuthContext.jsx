@@ -12,7 +12,7 @@ import {
 import useAxios from "../hooks/useAxios/useAxios";
 import useAxiosSecure from "../hooks/useAxiosSecure/useAxiosSecure";
 import app from "../config/firebase.config";
-import { ContextData } from "./../utility/ContextData";
+import { ContextData } from "../utility/ContextData";
 
 const auth = getAuth(app);
 
@@ -20,93 +20,125 @@ const AuthContext = ({ children }) => {
   const axiosCommon = useAxios();
   const axiosSecure = useAxiosSecure();
   const [user, setUser] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   // Create user with email and password
   const createUser = async (email, password) => {
-    setLoading(true);
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    return userCredential;
+    try {
+      setLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      return userCredential;
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error; // Ensure error is propagated
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Sign user in with email and password
   const signIn = async (email, password) => {
-    setLoading(true);
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    return userCredential;
+    try {
+      setLoading(true);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      return userCredential;
+    } catch (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Update user profile name and photo
   const profileUpdate = async (name, photo) => {
-    setLoading(true);
-    await updateProfile(auth.currentUser, {
-      displayName: name,
-      photoURL: photo,
-    });
-    const updatedUser = {
-      ...auth.currentUser,
-      displayName: name,
-      photoURL: photo,
-    };
-    setUser(updatedUser);
-    await saveUser(updatedUser);
+    try {
+      setLoading(true);
+      await updateProfile(auth.currentUser, {
+        displayName: name,
+        photoURL: photo,
+      });
+      const updatedUser = {
+        ...auth.currentUser,
+        displayName: name,
+        photoURL: photo,
+      };
+      setUser(updatedUser);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Log out
-  const logOut = () => {
-    setLoading(true);
-    return signOut(auth);
+  // Log out user
+  const logOut = async () => {
+    try {
+      setLoading(true);
+      await signOut(auth);
+      setUser(null);
+      setUserInfo(null);
+      await axiosSecure.post("/logout");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log(userInfo,user);
+  // Fetch user info from database
+  const fetchUserInfo = async (email) => {
+    try {
+      const { data } = await axiosCommon.get(`/users/${email}`);
+      setUserInfo(data);
+
+      // Generate and store JWT
+      // const loggedEmail = { email };
+      // const tokenResponse = await axiosSecure.post("/jwt", loggedEmail);
+      // if (tokenResponse.data) {
+      //   console.log("Token stored successfully");
+      // }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
   };
 
-
-
-
-  // Save user
-  const saveUser = async (newUser) => {
-    const currentUser = {
-      name: newUser.displayName,
-      email: newUser.email,
-      profile: newUser.photoURL,
-      role: "user",
-    };
-    console.log(currentUser, "users create");
-    const { data } = await axiosCommon.post("/users", currentUser);
-    return data;
-  };
-
+  // Monitor auth state and fetch user data
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        // const loggedEmail = { email: currentUser.email };
-        // axiosSecure.post("/jwt", loggedEmail).then((res) => {
-        //   console.log("token response", res.data);
-        // });
+      setLoading(true);
 
-        setLoading(false);
+      if (currentUser) {
+        setUser(currentUser);
+        await fetchUserInfo(currentUser.email);
       } else {
-        setLoading(false);
         setUser(null);
-        // axiosSecure.post("/logout").then((res) => {
-        //   console.log(res.data);
-        // });
+        setUserInfo(null);
       }
+
+      setLoading(false);
     });
-    return () => {
-      unsubscribe();
-    };
-  }, [user, axiosSecure]);
+
+    return () => unsubscribe();
+  }, []);
 
   const contextData = {
     createUser,
     signIn,
     user,
+    userInfo,
     logOut,
     loading,
-    setLoading,
-    setUser,
-    profileUpdate
+    profileUpdate,
   };
 
   return (

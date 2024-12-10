@@ -4,17 +4,44 @@ import { FiLogOut } from "react-icons/fi";
 import { MdOutlineInbox } from "react-icons/md";
 import { AiOutlineUser, AiOutlineKey } from "react-icons/ai";
 import { BsPeopleFill } from "react-icons/bs";
+import useAuth from "../../hooks/useAuth/useAuth";
+import Swal from "sweetalert2";
 
 const Profile = () => {
+  const {user,logOut}=useAuth()
+
+
+
+
+
+  const OnLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#14805E",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.reload()
+        logOut();
+        Swal.fire("Logged Out", "You have been successfully logged out.", "success");
+      }
+    });
+  };
+
   return (
     <div className=" p-4 text-white bg-gray-900">
       {/* Header Section */}
       <div className="bg-primary text-white p-4 rounded-lg mb-6">
         <div className="flex items-center space-x-4">
-          <div className="w-16 h-16 rounded-full bg-gray-700"></div>
+          <img className="w-16 h-16 rounded-full" src="https://as2.ftcdn.net/v2/jpg/02/15/84/43/1000_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg" alt="" />
+          
           <div>
-            <h1 className="text-xl font-bold">Qwert</h1>
-            <p className="text-sm opacity-80">ডিভাইপি পয়েন্টস (VP): 0 | মাই ডিভাইপি</p>
+            <h1 className="text-xl font-bold">{user?.displayName || 'name'}</h1>
+            <p className="text-sm opacity-80">{user?.email || 'eaxmple@gmail.com'}</p>
           </div>
         </div>
       </div>
@@ -73,7 +100,7 @@ const Profile = () => {
 
         {/* Logout Button */}
         <div className="text-center">
-          <Button variant="filled" color="red" className="w-full flex items-center justify-center">
+          <Button onClick={OnLogout} variant="filled" color="red" className="w-full flex items-center justify-center">
             <FiLogOut className="mr-2" /> লগ আউট
           </Button>
         </div>

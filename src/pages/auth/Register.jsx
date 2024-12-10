@@ -1,49 +1,66 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
+import useAuth from "../../hooks/useAuth/useAuth";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import useAxios from "../../hooks/useAxios/useAxios";
+import PulseLoader  from './../../../node_modules/react-spinners/esm/PulseLoader';
+import { Button } from '@material-tailwind/react';
 
 const Register = () => {
+  const navigate = useNavigate();
+  const axiosCommon = useAxios();
+  const { createUser, profileUpdate,loading } = useAuth();
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset,
   } = useForm();
-
-  const [captcha, setCaptcha] = useState(generateCaptcha());
-  const [captchaError, setCaptchaError] = useState("");
-
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Generate random CAPTCHA
-  function generateCaptcha() {
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let result = "";
-    for (let i = 0; i < 5; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
+  const { mutateAsync } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosCommon.post(`/users`, info);
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে।");
+    },
+    onError: () => {
+      toast.error("দুঃখিত, কিছু ভুল হয়েছে।");
+    },
+  });
+
+  const onSubmit = async (data) => {
+    try {
+       const info = await createUser(data.email, data.password);
+      await profileUpdate(data.name);
+
+      const saveUser = {
+        name: data.name,
+        phone: data.phone,
+        email: data.email,
+        referral: data.referral || null,
+        uid: info.user.uid,
+      };
+
+      mutateAsync(saveUser)
+      reset();
+      navigate(-1);
+    } catch {
+      toast.error("নিবন্ধন ব্যর্থ হয়েছে।");
     }
-    return result;
-  }
-
-  const refreshCaptcha = () => {
-    setCaptcha(generateCaptcha());
-    setCaptchaError("");
-  };
-
-  const onSubmit = (data) => {
-    if (data.captchaInput !== captcha) {
-      setCaptchaError("Captcha did not match!");
-      return;
-    }
-    alert("Registration successful!");
-    reset();
-    setCaptcha(generateCaptcha());
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
+    <div className="min-h-screen relative bg-gray-900 text-white flex items-center justify-center">
+                 <button onClick={()=>navigate('/')} className='absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl'>
+                 <FaArrowLeft />
+
+      </button>
       <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">সাইন আপ</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -51,18 +68,25 @@ const Register = () => {
           <div>
             <label className="block text-sm mb-1">ব্যবহারকারীর নাম</label>
             <input
-              {...register("username", {
-                required: "Username is required",
-                minLength: { value: 4, message: "Must be at least 4 characters" },
-                maxLength: { value: 15, message: "Must not exceed 15 characters" },
+              {...register("name", {
+                required: "ব্যবহারকারীর নাম আবশ্যক।",
+                minLength: {
+                  value: 4,
+                  message: "নাম অন্তত ৪ অক্ষরের হতে হবে।",
+                },
+                maxLength: {
+                  value: 15,
+                  message: "নাম সর্বাধিক ১৫ অক্ষরের হতে পারে।",
+                },
               })}
               type="text"
-              placeholder="৪-১৫ অক্ষর নাম্বার এলাউড"
+              placeholder="৪-১৫ অক্ষর লিখুন"
               className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              aria-label="ব্যবহারকারীর নাম"
             />
-            {errors.username && (
+            {errors.name && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.username.message}
+                {errors.name.message}
               </p>
             )}
           </div>
@@ -72,37 +96,40 @@ const Register = () => {
             <label className="block text-sm mb-1">ফোন নাম্বার</label>
             <input
               {...register("phone", {
-                required: "Phone number is required",
+                required: "ফোন নাম্বার আবশ্যক।",
                 pattern: {
                   value: /^[0-9]{10,15}$/,
-                  message: "Enter a valid phone number (10-15 digits)",
+                  message: "১০-১৫ ডিজিটের সঠিক ফোন নাম্বার দিন।",
                 },
               })}
               type="tel"
               placeholder="আপনার ফোন নাম্বার লিখুন"
               className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              aria-label="ফোন নাম্বার"
             />
             {errors.phone && (
               <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
             )}
           </div>
 
-          {/* Referral Code */}
+          {/* Email */}
           <div>
-            <label className="block text-sm mb-1">রেফার কোড (ঐচ্ছিক)</label>
+            <label className="block text-sm mb-1">ই-মেইল</label>
             <input
-              {...register("referral", {
-                maxLength: {
-                  value: 10,
-                  message: "Referral code must not exceed 10 characters",
+              {...register("email", {
+                required: "ই-মেইল আবশ্যক।",
+                pattern: {
+                  value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                  message: "সঠিক ই-মেইল ঠিকানা দিন।",
                 },
               })}
-              type="text"
-              placeholder="রেফার কোড লিখুন (ঐচ্ছিক)"
+              type="email"
+              placeholder="ই-মেইল"
               className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              aria-label="ই-মেইল"
             />
-            {errors.referral && (
-              <p className="text-red-500 text-sm mt-1">{errors.referral.message}</p>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
             )}
           </div>
 
@@ -112,17 +139,22 @@ const Register = () => {
             <div className="relative">
               <input
                 {...register("password", {
-                  required: "Password is required",
-                  minLength: { value: 6, message: "Must be at least 6 characters" },
+                  required: "পাসওয়ার্ড আবশ্যক।",
+                  minLength: {
+                    value: 6,
+                    message: "পাসওয়ার্ড অন্তত ৬ অক্ষরের হতে হবে।",
+                  },
                 })}
                 type={showPassword ? "text" : "password"}
-                placeholder="৬-২০ অক্ষর নাম্বার এলাউড"
+                placeholder="৬-২০ অক্ষর লিখুন"
                 className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+                aria-label="পাসওয়ার্ড"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute top-2 right-2 text-gray-400 hover:text-gray-300"
+                aria-label="পাসওয়ার্ড দেখুন"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -134,83 +166,25 @@ const Register = () => {
             )}
           </div>
 
-          {/* Confirm Password */}
+          {/* Referral Code */}
           <div>
-            <label className="block text-sm mb-1">পাসওয়ার্ড নিশ্চিত করুন</label>
-            <div className="relative">
-              <input
-                {...register("confirmPassword", {
-                  required: "Confirm Password is required",
-                  validate: (value) =>
-                    value === watch("password") || "Passwords do not match",
-                })}
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="পাসওয়ার্ড নিশ্চিত করুন"
-                className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute top-2 right-2 text-gray-400 hover:text-gray-300"
-              >
-                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm mb-1">ই-মেইল</label>
+            <label className="block text-sm mb-1">রেফার কোড (ঐচ্ছিক)</label>
             <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
-                  message: "Invalid email address",
+              {...register("referral", {
+                maxLength: {
+                  value: 10,
+                  message: "রেফার কোড সর্বাধিক ১০ অক্ষরের হতে পারে।",
                 },
               })}
-              type="email"
-              placeholder="ই-মেইল"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* CAPTCHA */}
-          <div>
-            <label className="block text-sm mb-1">ভেরিফিকেশন কোড</label>
-            <div className="flex items-center gap-4">
-              <span className="px-4 py-2 bg-gray-700 rounded-md font-mono text-lg">
-                {captcha}
-              </span>
-              <button
-                type="button"
-                onClick={refreshCaptcha}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md text-white"
-              >
-                ↻
-              </button>
-            </div>
-            <input
-              {...register("captchaInput", { required: "Captcha is required" })}
               type="text"
-              placeholder="Enter the code above"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400 mt-2"
+              placeholder="রেফার কোড লিখুন (ঐচ্ছিক)"
+              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              aria-label="রেফার কোড"
             />
-            {errors.captchaInput && (
+            {errors.referral && (
               <p className="text-red-500 text-sm mt-1">
-                {errors.captchaInput.message}
+                {errors.referral.message}
               </p>
-            )}
-            {captchaError && (
-              <p className="text-red-500 text-sm mt-1">{captchaError}</p>
             )}
           </div>
 
@@ -218,12 +192,14 @@ const Register = () => {
           <div>
             <label className="flex items-center">
               <input
-                {...register("terms", { required: "You must accept the terms" })}
+                {...register("terms", {
+                  required: "আপনাকে শর্তসমূহ মেনে নিতে হবে।",
+                })}
                 type="checkbox"
                 className="mr-2"
               />
               <span className="text-sm">
-                আমি ১৮ বছরের বয়সী এবং শর্তাদি শর্তে সম্মত।
+                আমি ১৮ বছরের এবং শর্তাদি সম্মত।
               </span>
             </label>
             {errors.terms && (
@@ -232,12 +208,18 @@ const Register = () => {
           </div>
 
           {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
-          >
-            নিশ্চিত করুন
-          </button>
+          <Button
+  disabled={loading}
+  type="submit"
+  className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex justify-center items-center"
+>
+  {loading ? (
+   <div> <PulseLoader size={8} color="#ffffff" /></div>
+  ) : (
+    'নিশ্চিত করুন'
+  )}
+</Button>
+
         </form>
       </div>
     </div>

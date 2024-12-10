@@ -1,7 +1,9 @@
 import { Button } from '@material-tailwind/react';
 import { Link } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth/useAuth';
 
 const Topbar = () => {
+    const {user}=useAuth()
     return (
         <div className=" bg-background-dark px-2 py-4 flex justify-between items-center shadow-xl rounded-lg">
             {/* Logo Section */}
@@ -11,19 +13,27 @@ const Topbar = () => {
 
             {/* Balance Information and Buttons */}
             <div className="flex gap-3">
-    {/* Login Button */}
-    <button 
-        className="px-4 py-2 border-2 border-primary text-primary rounded-md hover:bg-secondary hover:text-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-secondary"
-    >
-       <Link to='/login'> Login</Link>
-    </button>
+    {!user && (
 
-    {/* Sign Up Button */}
-    <Button 
-        className="bg-primary px-5 py-2 text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-secondary"
-    >
-      <Link to='/register'>  Sign Up</Link>
-    </Button>
+<>
+        <button 
+            className="px-4 py-2 border-2 border-primary text-primary rounded-md hover:bg-secondary hover:text-white transition duration-300 focus:outline-none focus:ring-2 focus:ring-secondary"
+        >
+           <Link to='/login'> Login</Link>
+        </button>
+    
+       
+        <Button 
+            className="bg-primary px-5 py-2 text-white rounded-md hover:bg-primary-dark focus:ring-2 focus:ring-secondary"
+        >
+          <Link to='/register'>  Sign Up</Link>
+        </Button>
+    
+    
+</>
+    )}
+
+
 </div>
 
         </div>
