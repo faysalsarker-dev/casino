@@ -1,84 +1,51 @@
-import { Button } from '@material-tailwind/react';
-import { useState } from 'react';
-import { Wheel } from 'react-custom-roulette';
+import  { useState } from 'react';
+import { useSpring, animated } from 'react-spring';
 
-const BettingSpinWheel = () => {
-  const [mustSpin, setMustSpin] = useState(false);
-  const [prizeNumber, setPrizeNumber] = useState(0);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [result, setResult] = useState(null); // For showing the result
+const SpinWheel = () => {
+  const [spinning, setSpinning] = useState(false);
+  const [rotation, setRotation] = useState(0);
 
-  const data = [
-    { option: '1000', style: { backgroundColor: '#FFC107', textColor: '#FFF' } },
-    { option: '500', style: { backgroundColor: '#FF5722', textColor: '#FFF' } },
-    { option: '400', style: { backgroundColor: '#03A9F4', textColor: '#FFF' } },
-    { option: '200', style: { backgroundColor: '#8BC34A', textColor: '#FFF' } },
-    { option: '100', style: { backgroundColor: '#9C27B0', textColor: '#FFF' } },
-    { option: '900', style: { backgroundColor: '#E91E63', textColor: '#FFF' } },
-    { option: '800', style: { backgroundColor: '#FF9800', textColor: '#FFF' } },
-    { option: '700', style: { backgroundColor: '#3F51B5', textColor: '#FFF' } },
-  ];
-
-  const handleSpinClick = () => {
-    if (isSpinning) return; // Prevent double spins
-    const resultFromServer = Math.floor(Math.random() * data.length);
-    setPrizeNumber(resultFromServer);
-    setMustSpin(true);
-    setIsSpinning(true);
+  const spin = () => {
+    if (!spinning) {
+      setSpinning(true);
+      const randomDegree = Math.floor(Math.random() * 360 + 720); // Spin at least 2 full rotations
+      setRotation(randomDegree);
+      setTimeout(() => {
+        setSpinning(false);
+      }, 4000); // Duration of spin
+    }
   };
 
-  const handleSpinEnd = () => {
-    setMustSpin(false);
-    setIsSpinning(false);
-    setResult(data[prizeNumber].option); // Display the prize result
-
-    // Reset the result after a delay (e.g., 3 seconds)
-    setTimeout(() => {
-      setResult(null);
-    }, 3000);
-  };
+  const props = useSpring({ transform: `rotate(${rotation}deg)` });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-indigo-900 via-purple-800 to-pink-700 text-white">
-      <h1 className="text-4xl font-bold mb-6 text-center drop-shadow-md">
-        🌰 Betting Spin Wheel 🌰
-      </h1>
-      <div className="flex flex-col items-center gap-6">
-        <div className="relative">
-          <Wheel
-            mustStartSpinning={mustSpin}
-            prizeNumber={prizeNumber}
-            data={data}
-          
-            onStopSpinning={handleSpinEnd}
-            fontFamily="Poppins"
-            innerRadius={20}
-            outerBorderColor="#FFD700"
-            outerBorderWidth={12}
-            radiusLineColor="#FFFFFF"
-            radiusLineWidth={4}
-            spinDuration={0.5}
-            textColors={['#FFF']}
-          />
-          {result && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-xl font-bold rounded-full">
-              Prize: {result}
-            </div>
-          )}
+    <div className="flex flex-col items-center justify-center h-screen">
+      <animated.div
+        style={props}
+        className="w-64 h-64 border-8 border-gray-300 rounded-full flex items-center justify-center"
+      >
+        {/* Add segments here */}
+        <div className="absolute w-full h-full">
+          {/* Example segments */}
+          <div className="absolute w-1/2 h-1/2 bg-red-500" style={{ transform: 'rotate(0deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-blue-500" style={{ transform: 'rotate(45deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-green-500" style={{ transform: 'rotate(90deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-yellow-500" style={{ transform: 'rotate(135deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-purple-500" style={{ transform: 'rotate(180deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-pink-500" style={{ transform: 'rotate(225deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-orange-500" style={{ transform: 'rotate(270deg)' }} />
+          <div className="absolute w-1/2 h-1/2 bg-teal-500" style={{ transform: 'rotate(315deg)' }} />
         </div>
-
-        <Button
-          className={`btn btn-primary transition-transform ${
-            isSpinning ? 'btn-disabled opacity-50' : 'hover:scale-105'
-          }`}
-          onClick={handleSpinClick}
-          disabled={isSpinning}
-        >
-          {isSpinning ? 'Spinning...' : 'Spin Now'}
-        </Button>
-      </div>
+      </animated.div>
+      <button
+        onClick={spin}
+        className="mt-8 p-2 bg-blue-500 text-white rounded"
+        disabled={spinning}
+      >
+        Spin the Wheel
+      </button>
     </div>
   );
 };
 
-export default BettingSpinWheel;
+export default SpinWheel;

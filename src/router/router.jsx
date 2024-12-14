@@ -8,6 +8,9 @@ import Login from "../pages/auth/Login";
 import Profile from "../pages/profile/Profile";
 import Support from "../pages/support/Support";
 import History from "../pages/history/History";
+import DepositRequestPage from "../pages/Deposit/Deposit";
+
+
 
 
 const router = createBrowserRouter([
@@ -32,6 +35,11 @@ const router = createBrowserRouter([
             path:'/profile',
             element:<Profile/>
         },
+        {
+            path:'/diposit',
+            element:<DepositRequestPage/>
+        },
+      
         {
             path:'/support',
             element:<Support/>
