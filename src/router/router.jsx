@@ -9,6 +9,8 @@ import Profile from "../pages/profile/Profile";
 import Support from "../pages/support/Support";
 import History from "../pages/history/History";
 import DepositRequestPage from "../pages/Deposit/Deposit";
+import WithdrawRequestPage from "../pages/withdraw/Withdraw";
+import PasswordReset from "../pages/passwordReset/PasswordReset";
 
 
 
@@ -36,13 +38,21 @@ const router = createBrowserRouter([
             element:<Profile/>
         },
         {
-            path:'/diposit',
+            path:'/deposit',
             element:<DepositRequestPage/>
+        },
+        {
+            path:'/withdraw',
+            element:<WithdrawRequestPage/>
         },
       
         {
             path:'/support',
             element:<Support/>
+        },
+        {
+            path:'/reset',
+            element:<PasswordReset/>
         },
         {
             path:'/history',

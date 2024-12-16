@@ -7,6 +7,7 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 import useAxios from "../hooks/useAxios/useAxios";
@@ -59,6 +60,21 @@ const AuthContext = ({ children }) => {
     }
   };
 
+
+  const resetPassword = async (email) => {
+    try {
+      setLoading(true);
+      const reset = await sendPasswordResetEmail(auth, email);
+      return reset;
+    } catch (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   // Update user profile name and photo
   const profileUpdate = async (name, photo) => {
     try {
@@ -94,8 +110,7 @@ const AuthContext = ({ children }) => {
       setLoading(false);
     }
   };
-  console.log(userInfo,user);
-  // Fetch user info from database
+
   const fetchUserInfo = async (email) => {
     try {
       const { data } = await axiosCommon.get(`/users/${email}`);
@@ -139,6 +154,7 @@ const AuthContext = ({ children }) => {
     logOut,
     loading,
     profileUpdate,
+    resetPassword
   };
 
   return (
