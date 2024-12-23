@@ -6,13 +6,12 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios/useAxios";
-import PulseLoader  from './../../../node_modules/react-spinners/esm/PulseLoader';
-import { Button } from '@material-tailwind/react';
-
+import PulseLoader from "react-spinners/PulseLoader";
+import { Button } from "@material-tailwind/react";
 const Register = () => {
   const navigate = useNavigate();
   const axiosCommon = useAxios();
-  const { createUser, profileUpdate,loading } = useAuth();
+  const { createUser, profileUpdate } = useAuth();
   const {
     register,
     handleSubmit,
@@ -20,6 +19,7 @@ const Register = () => {
     reset,
   } = useForm();
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { mutateAsync } = useMutation({
     mutationFn: async (info) => {
@@ -35,10 +35,22 @@ const Register = () => {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
+  
     try {
-       const info = await createUser(data.email, data.password);
+      const checkUser = { email: data.email, phone: data.phone };
+      const { data: isExists } = await axiosCommon.post(`/users/check`, checkUser);
+  
+      if (isExists.exists) {
+        toast.error(`${isExists.message}`);
+        setLoading(false);
+        return;
+      }
+  
+      // Proceed with registration
+      const info = await createUser(data.email, data.password);
       await profileUpdate(data.name);
-
+  
       const saveUser = {
         name: data.name,
         phone: data.phone,
@@ -46,20 +58,27 @@ const Register = () => {
         referral: data.referral || null,
         uid: info.user.uid,
       };
-
-      mutateAsync(saveUser)
+  
+      await mutateAsync(saveUser);
       reset();
       navigate(-1);
-    } catch {
+    } catch (error) {
+      console.error(error);
       toast.error("নিবন্ধন ব্যর্থ হয়েছে।");
+    } finally {
+      setLoading(false);
     }
   };
 
+  
+  
   return (
     <div className="min-h-screen relative bg-gray-900 text-white flex items-center justify-center">
-                 <button onClick={()=>navigate('/')} className='absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl'>
-                 <FaArrowLeft />
-
+      <button
+        onClick={() => navigate("/")}
+        className="absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl"
+      >
+        <FaArrowLeft />
       </button>
       <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">সাইন আপ</h1>
@@ -85,9 +104,7 @@ const Register = () => {
               aria-label="ব্যবহারকারীর নাম"
             />
             {errors.name && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.name.message}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
             )}
           </div>
 
@@ -108,7 +125,9 @@ const Register = () => {
               aria-label="ফোন নাম্বার"
             />
             {errors.phone && (
-              <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.phone.message}
+              </p>
             )}
           </div>
 
@@ -129,7 +148,9 @@ const Register = () => {
               aria-label="ই-মেইল"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -198,28 +219,30 @@ const Register = () => {
                 type="checkbox"
                 className="mr-2"
               />
-              <span className="text-sm">
-                আমি ১৮ বছরের এবং শর্তাদি সম্মত।
-              </span>
+              <span className="text-sm">আমি ১৮ বছরের এবং শর্তাদি সম্মত।</span>
             </label>
             {errors.terms && (
-              <p className="text-red-500 text-sm mt-1">{errors.terms.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.terms.message}
+              </p>
             )}
           </div>
 
           {/* Submit */}
           <Button
-  disabled={loading}
-  type="submit"
-  className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex justify-center items-center"
->
-  {loading ? (
-   <div> <PulseLoader size={8} color="#ffffff" /></div>
-  ) : (
-    'নিশ্চিত করুন'
-  )}
-</Button>
-
+            disabled={loading}
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex justify-center items-center"
+          >
+            {loading ? (
+              <div>
+                {" "}
+                <PulseLoader size={8} color="#ffffff" />
+              </div>
+            ) : (
+              "নিশ্চিত করুন"
+            )}
+          </Button>
         </form>
       </div>
     </div>

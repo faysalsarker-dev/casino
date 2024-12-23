@@ -117,11 +117,11 @@ const AuthContext = ({ children }) => {
       setUserInfo(data);
 
       // Generate and store JWT
-      // const loggedEmail = { email };
-      // const tokenResponse = await axiosSecure.post("/jwt", loggedEmail);
-      // if (tokenResponse.data) {
-      //   console.log("Token stored successfully");
-      // }
+      const loggedEmail = { email };
+      const tokenResponse = await axiosSecure.post("/jwt", loggedEmail);
+      if (tokenResponse.data) {
+        console.log("Token stored successfully");
+      }
     } catch (error) {
       console.error("Error fetching user info:", error);
     }

@@ -8,9 +8,11 @@ import Login from "../pages/auth/Login";
 import Profile from "../pages/profile/Profile";
 import Support from "../pages/support/Support";
 import History from "../pages/history/History";
-import DepositRequestPage from "../pages/Deposit/Deposit";
-import WithdrawRequestPage from "../pages/withdraw/Withdraw";
+
+
 import PasswordReset from "../pages/passwordReset/PasswordReset";
+import { DepositPage } from "../pages/deposit/DepositPage";
+import { WithdrowPage } from "../pages/withdraw/WithdrowPage";
 
 
 
@@ -39,11 +41,11 @@ const router = createBrowserRouter([
         },
         {
             path:'/deposit',
-            element:<DepositRequestPage/>
+            element:<DepositPage/>
         },
         {
             path:'/withdraw',
-            element:<WithdrawRequestPage/>
+            element:<WithdrowPage/>
         },
       
         {

@@ -1,7 +1,39 @@
-import { FaFacebook, FaTelegram, FaWhatsapp, FaTwitter } from "react-icons/fa";
-import { Button } from "@material-tailwind/react";
+import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
+import useAxiosSecure from './../../hooks/useAxiosSecure/useAxiosSecure';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 const Support = () => {
+  const axiosSecure = useAxiosSecure();
+
+  const { data = [], isLoading, isError } = useQuery({
+    queryKey: ['Support'],
+    queryFn: async () => {
+      const { data } = await axiosSecure.get('/supports');
+      return data;
+    },
+  });
+
+  const getThemeColor = (name) => {
+    switch (name.toLowerCase()) {
+      case 'facebook':
+        return 'blue-600';
+      case 'whatsapp':
+        return 'green-500';
+      case 'twitter':
+        return 'blue-400';
+      case 'instagram':
+        return 'pink-500';
+      case 'linkedin':
+        return 'blue-700';
+      case 'telegram':
+        return 'blue-500';
+      default:
+        return 'gray-500';
+    }
+  };
+
   return (
     <div className="bg-gray-900 p-6 text-white">
       {/* Header Section */}
@@ -16,53 +48,36 @@ const Support = () => {
 
         {/* Links Section */}
         <div className="space-y-4">
-          <Button
-            variant="outlined"
-            color="blue"
-            className="w-full flex items-center justify-between p-4"
-            onClick={() => window.open("https://facebook.com", "_blank")}
-          >
-            <span className="flex items-center">
-              <FaFacebook size={24} className="mr-4 text-blue-500" /> Facebook
-            </span>
-            <span>Visit</span>
-          </Button>
+          {isLoading && (
+            Array(5).fill().map((_, idx) => (
+              <div key={idx} className="w-full flex items-center justify-between p-4 border-2">
+                <Skeleton width={120} />
+                <Skeleton width={60} />
+              </div>
+            ))
+          )}
 
-          <Button
-            variant="outlined"
-            color="blue"
-            className="w-full flex items-center justify-between p-4"
-            onClick={() => window.open("https://telegram.org", "_blank")}
-          >
-            <span className="flex items-center">
-              <FaTelegram size={24} className="mr-4 text-blue-400" /> Telegram
-            </span>
-            <span>Visit</span>
-          </Button>
+          {isError && <p className="text-red-500">Failed to load support links. Please try again later.</p>}
 
-          <Button
-            variant="outlined"
-            color="green"
-            className="w-full flex items-center justify-between p-4"
-            onClick={() => window.open("https://whatsapp.com", "_blank")}
-          >
-            <span className="flex items-center">
-              <FaWhatsapp size={24} className="mr-4 text-green-400" /> WhatsApp
-            </span>
-            <span>Visit</span>
-          </Button>
+          {data.length === 0 && !isLoading && !isError && (
+            <p className="text-red-500">No support links available at the moment.</p>
+          )}
 
-          <Button
-            variant="outlined"
-            color="blue"
-            className="w-full flex items-center justify-between p-4"
-            onClick={() => window.open("https://twitter.com", "_blank")}
-          >
-            <span className="flex items-center">
-              <FaTwitter size={24} className="mr-4 text-blue-300" /> Twitter
-            </span>
-            <span>Visit</span>
-          </Button>
+          {data?.map((support, idx) => (
+            <Link key={idx} to={support.link} target="_blank" rel="noopener noreferrer">
+              <div
+                className={`w-full flex items-center justify-between p-4 border-2 rounded-lg border-${getThemeColor(
+                  support?.name || ''
+                )}`}
+              >
+                <span className="flex items-center gap-2">
+                  {support?.icon && <span className="text-lg">{support.icon}</span>}
+                  <span className="capitalize">{support?.name || 'Unknown'}</span>
+                </span>
+                <span className="font-semibold">Visit</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>

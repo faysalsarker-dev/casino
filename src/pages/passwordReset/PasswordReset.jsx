@@ -1,6 +1,5 @@
 
 import { useForm } from "react-hook-form";
-import { sendPasswordResetEmail } from "firebase/auth";
 
 import {
   Card,
@@ -50,7 +49,7 @@ const PasswordReset = () => {
               variant="paragraph"
               className="text-gray-300 text-center mb-4"
             >
-              Enter your registered email address, and we'll send you a link to
+              Enter your registered email address, and we&apos;ll send you a link to
               reset your password.
             </Typography>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
