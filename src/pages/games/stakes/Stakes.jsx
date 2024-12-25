@@ -1,13 +1,15 @@
-import React, { useState } from "react";
-import { FaGem } from "react-icons/fa";
-import { Toaster, toast } from "react-hot-toast";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import { motion } from "framer-motion";
+import gem from "../../../images/gem.png";
+import bomb from "../../../images/bomb.png";
 
 const Stakes = () => {
-  const [rows, setRows] = useState(5); 
-  const [columns, setColumns] = useState(5); 
-  const [bombs, setBombs] = useState(3); 
-  const [bombIndexes, setBombIndexes] = useState([]); 
-  const [revealed, setRevealed] = useState([]); 
+  const [rows, setRows] = useState(5);
+  const [columns, setColumns] = useState(5);
+  const [bombs, setBombs] = useState(3);
+  const [bombIndexes, setBombIndexes] = useState([]);
+  const [revealed, setRevealed] = useState([]);
 
   const generateBombIndexes = (totalCells, numBombs) => {
     const bombSet = new Set();
@@ -21,7 +23,7 @@ const Stakes = () => {
   const handleStartGame = () => {
     const totalCells = rows * columns;
     if (bombs >= totalCells) {
-     
+      toast.error("Too many bombs for the grid size!");
       return;
     }
     const newBombIndexes = generateBombIndexes(totalCells, bombs);
@@ -33,16 +35,20 @@ const Stakes = () => {
   const handleCellClick = (index) => {
     if (revealed.includes(index)) return;
 
-  
-      
-  
+    const isBomb = bombIndexes.includes(index);
+
+    if (isBomb) {
+      console.log("💥 Bomb clicked!");
+      toast.error("💥 Boom! You hit a bomb!");
+    } else {
+      toast.success("✨ Safe! Found a gem!");
+    }
+
     setRevealed([...revealed, index]);
   };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-    
-
       {/* Main Content */}
       <div className="p-4 flex flex-col items-center gap-6">
         {/* Game Settings */}
@@ -95,7 +101,7 @@ const Stakes = () => {
           {Array(rows * columns)
             .fill(null)
             .map((_, index) => (
-              <button
+              <motion.button
                 key={index}
                 onClick={() => handleCellClick(index)}
                 disabled={revealed.includes(index)}
@@ -103,15 +109,31 @@ const Stakes = () => {
                   revealed.includes(index)
                     ? bombIndexes.includes(index)
                       ? "bg-red-500"
-                      : "bg-green-500"
+                      : "bg-gray-800"
                     : "bg-gray-700 hover:bg-gray-600"
                 }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
-                {revealed.includes(index) && bombIndexes.includes(index) && "💣"}
-                {revealed.includes(index) && !bombIndexes.includes(index) && (
-                  <FaGem className="text-yellow-400" />
+                {revealed.includes(index) && bombIndexes.includes(index) && (
+                  <motion.img
+                    src={bomb}
+                    alt="bomb"
+                    initial={{ scale: 0, rotate: 180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.5 }}
+                  />
                 )}
-              </button>
+                {revealed.includes(index) && !bombIndexes.includes(index) && (
+                  <motion.img
+                    src={gem}
+                    alt="gem"
+                    initial={{ opacity: 0, scale: 0.5 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5 }}
+                  />
+                )}
+              </motion.button>
             ))}
         </div>
       </div>
