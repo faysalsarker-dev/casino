@@ -2,12 +2,58 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import 'tailwindcss/tailwind.css';
 
+// Array of symbols for the slot machine
 const symbols = ['🍒', '🍋', '🍊', '7️⃣', '🍉'];
 
+// Helper function to get a random symbol
 const getRandomSymbol = () => symbols[Math.floor(Math.random() * symbols.length)];
 
+// Animation variants for the spinning effect
+const spinVariants = {
+  spinning: {
+    y: [0, -100, -200, -300, -400, 0], // Adjust these values based on symbol height
+    transition: {
+      y: {
+        repeat: Infinity,
+        duration: 1,
+        ease: 'linear',
+      },
+    },
+  },
+  stopped: (finalPosition) => ({
+    y: -finalPosition * 100, // Adjust these values based on symbol height
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  }),
+};
+
+// Reel component to display individual reels with animations
+const Reel = ({ isSpinning, finalSymbol }) => {
+  const finalPosition = symbols.indexOf(finalSymbol);
+
+  return (
+    <div className="overflow-hidden h-24 w-24 border-4 border-yellow-500 rounded-lg">
+      <motion.div
+        className="flex flex-col"
+        variants={spinVariants}
+        animate={isSpinning ? 'spinning' : 'stopped'}
+        custom={finalPosition}
+      >
+        {symbols.map((symbol, index) => (
+          <div key={index} className="h-24 flex items-center justify-center text-4xl">
+            {symbol}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// Main Lucky777 component
 const Lucky777 = () => {
-  const [reels, setReels] = useState(['', '', '']);
+  const [reels, setReels] = useState(['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(false);
   const [balance, setBalance] = useState(100);
   const [message, setMessage] = useState('');
@@ -16,26 +62,13 @@ const Lucky777 = () => {
     if (spinning) return;
 
     setSpinning(true);
-    setReels(['🔄', '🔄', '🔄']);
     setBalance(balance - 10);
     setMessage('');
 
     const newReels = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
-
-    // Animate reels individually with delays
-    const delays = [0, 500, 1000];
-    delays.forEach((delay, index) => {
-      setTimeout(() => {
-        setReels((prevReels) => {
-          const updatedReels = [...prevReels];
-          updatedReels[index] = getRandomSymbol();
-          return updatedReels;
-        });
-      }, delay);
-    });
+    setReels(newReels);
 
     setTimeout(() => {
-      setReels(newReels);
       setSpinning(false);
       checkWin(newReels);
     }, 3000); // Total spin duration
@@ -55,7 +88,7 @@ const Lucky777 = () => {
 
   const resetGame = () => {
     setBalance(100);
-    setReels(['', '', '']);
+    setReels(['🍒', '🍋', '🍊']);
     setMessage('');
   };
 
@@ -64,24 +97,11 @@ const Lucky777 = () => {
       <h1 className="text-4xl font-bold mb-8">Lucky 777</h1>
       <div className="flex space-x-4 mb-6">
         {reels.map((symbol, index) => (
-          <motion.div
-            key={index}
-            className="w-24 h-24 flex items-center justify-center bg-gray-800 border-4 border-yellow-500 rounded-lg text-4xl shadow-lg"
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{
-              y: { type: 'spring', stiffness: 300, damping: 20 },
-              opacity: { duration: 0.2 },
-            }}
-          >
-            {symbol}
-          </motion.div>
+          <Reel key={index} isSpinning={spinning} finalSymbol={symbol} />
         ))}
       </div>
       <div className="flex space-x-4 mb-6">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+        <button
           onClick={spinReels}
           className={`px-6 py-3 bg-red-500 hover:bg-red-700 text-white font-bold rounded-full shadow-xl ${
             spinning ? 'opacity-50 cursor-not-allowed' : ''
@@ -89,26 +109,19 @@ const Lucky777 = () => {
           disabled={spinning}
         >
           Spin
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+        </button>
+        <button
           onClick={resetGame}
           className="px-6 py-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-full shadow-xl"
         >
           Reset
-        </motion.button>
+        </button>
       </div>
       <div className="text-2xl mb-4 font-mono">Balance: ${balance}</div>
       {message && (
-        <motion.div
-          className="text-3xl text-yellow-400 font-bold"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-        >
+        <div className="text-3xl text-yellow-400 font-bold">
           {message}
-        </motion.div>
+        </div>
       )}
     </div>
   );

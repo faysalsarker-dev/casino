@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
+import egg from "../.../../../../images/egg.png";
+import bomb from "../.../../../../images/bomb.png";
 
 const DragonTower = () => {
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -10,23 +12,22 @@ const DragonTower = () => {
 
   const difficultyConfig = {
     easy: { boxes: 4, booms: 1 },
-    medium: { boxes: 3, booms: 1 },
-    hard: { boxes: 3, booms: 2 },
+    medium: { boxes: 3, booms: 2 },
+    hard: { boxes: 3, booms: 1 },
   };
 
   const { boxes, booms } = difficultyConfig[difficulty];
 
-  // Generate the tower dynamically based on difficulty
   const generateTower = () => {
-    const rows = 5; // Fixed number of rows
+    const rows = 5;
     return Array(rows)
       .fill(null)
       .map(() => {
-        const row = Array(boxes).fill(true); // All safe initially
+        const row = Array(boxes).fill(true);
         for (let i = 0; i < booms; i++) {
-          row[i] = false; // Add booms
+          row[i] = false;
         }
-        return row.sort(() => Math.random() - 0.5); // Shuffle the row
+        return row.sort(() => Math.random() - 0.5);
       });
   };
 
@@ -41,7 +42,7 @@ const DragonTower = () => {
 
     if (isSafe) {
       if (currentLevel === tower.length - 1) {
-        setWon(true); // Player wins if they clear the last level
+        setWon(true);
       } else {
         setCurrentLevel(currentLevel + 1);
       }
@@ -60,14 +61,13 @@ const DragonTower = () => {
 
   const handleDifficultyChange = (e) => {
     setDifficulty(e.target.value);
-    handleRestart(); // Restart the game when difficulty changes
+    handleRestart();
   };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white">
       <h1 className="text-4xl font-bold my-8">Dragon Tower</h1>
 
-      {/* Difficulty Selector */}
       <div className="mb-6">
         <label htmlFor="difficulty" className="mr-4 text-lg">
           Select Difficulty:
@@ -103,14 +103,23 @@ const DragonTower = () => {
                 (p) => p.level === levelIndex && p.index === tileIndex
               );
 
+              const showBoom =
+                gameOver && !isSelected && !tile; 
+              const showBox =
+                gameOver && !isSelected && tile; 
+
               return (
                 <motion.div
                   key={tileIndex}
                   className={`w-16 h-16 flex items-center justify-center rounded-md cursor-pointer ${
                     isSelected
                       ? result?.isSafe
-                        ? "bg-green-500"
-                        : "bg-red-500"
+                        ? "bg-gray-800"
+                        : "bg-gray-800"
+                      : showBoom
+                      ? "bg-red-500"
+                      : showBox
+                      ? "bg-green-500"
                       : levelIndex === currentLevel
                       ? "bg-gray-700 hover:bg-gray-600"
                       : "bg-gray-800"
@@ -119,7 +128,14 @@ const DragonTower = () => {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => levelIndex === currentLevel && handleTileClick(tileIndex)}
                 >
-                  {isSelected && (result?.isSafe ? "✅" : "💀")}
+                  {isSelected &&
+                    (result?.isSafe ? (
+                      <img src={egg} className="w-full" alt="egg" />
+                    ) : (
+                      <img src={bomb} className="w-full" alt="bomb" />
+                    ))}
+                  {showBoom && <img src={bomb} className="w-full" alt="bomb" />}
+                  {showBox && <img src={egg} className="w-full" alt="egg" />}
                 </motion.div>
               );
             })}
