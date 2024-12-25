@@ -1,51 +1,97 @@
-import  { useState } from 'react';
-import { useSpring, animated } from 'react-spring';
+// import React, { useState } from 'react';
+// import { SpinWheel } from 'spin-wheel-game';
 
-const SpinWheel = () => {
-  const [spinning, setSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0);
+// const segments = [
+//   { segmentText: '1x', segColor: '#FF4D4D' },
+//   { segmentText: '2x', segColor: '#4D79FF' },
+//   { segmentText: '0.5x', segColor: '#4DFF88' },
+//   { segmentText: '10x', segColor: '#FF4D4D' },
+//   { segmentText: '0.0x', segColor: '#4D79FF' },
+//   { segmentText: '2x', segColor: '#4DFF88' },
+//   { segmentText: '1x', segColor: '#4DFF88' },
+//   { segmentText: '0.10x', segColor: '#4DFF88' },
+// ];
 
-  const spin = () => {
-    if (!spinning) {
-      setSpinning(true);
-      const randomDegree = Math.floor(Math.random() * 360 + 720); // Spin at least 2 full rotations
-      setRotation(randomDegree);
-      setTimeout(() => {
-        setSpinning(false);
-      }, 4000); // Duration of spin
-    }
-  };
+// const SpinningWheel = () => {
+//   const [spinResult, setSpinResult] = useState(null);
 
-  const props = useSpring({ transform: `rotate(${rotation}deg)` });
+//   const handleSpinFinish = (result) => {
+//     setSpinResult(result);
+//     console.log(`Spun to: ${result}`);
+//     // Additional logic for custom results (e.g., update user balance)
+//   };
 
+//   const spinWheelProps = {
+//     segments,
+//     onFinished: handleSpinFinish,
+//     primaryColor: 'linear-gradient(45deg, #333333, #000000)', // Dark theme
+//     contrastColor: '#FFFFFF', // Text color
+//     buttonText: 'Spin & Win!',
+//     isOnlyOnce: false,
+//     size: 300,
+//     upDuration: 150,
+//     downDuration: 700,
+//     fontFamily: 'Arial, sans-serif',
+//     arrowLocation: 'top',
+//     showTextOnSpin: true,
+//     isSpinSound: true,
+//   };
+
+//   return (
+//     <div
+//       style={{
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         minHeight: '100vh',
+//         backgroundColor: '#1A1A1A', // Casino background
+//         color: '#FFF',
+//         fontFamily: 'Arial, sans-serif',
+//       }}
+//     >
+//       <h1 style={{ marginBottom: '20px', textShadow: '0px 0px 10px #FF4D4D' }}>
+//         Spin the Wheel and Win Big!
+//       </h1>
+//       <div
+//         style={{
+//           boxShadow: '0px 0px 20px 5px rgba(255, 255, 255, 0.5)',
+//           borderRadius: '50%',
+//           padding: '10px',
+//           background: 'radial-gradient(circle, #222222, #111111)',
+//         }}
+//       >
+//         <SpinWheel {...spinWheelProps} />
+//       </div>
+//       {spinResult && (
+//         <div
+//           style={{
+//             marginTop: '20px',
+//             padding: '10px 20px',
+//             borderRadius: '8px',
+//             background: 'rgba(255, 255, 255, 0.1)',
+//             boxShadow: '0px 0px 10px #FF4D4D',
+//           }}
+//         >
+//           <h3>Congratulations! 🎉</h3>
+//           <p>
+//             You won <strong>{spinResult}</strong>!
+//           </p>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default SpinningWheel;
+import React from 'react';
+
+const SpinningWheel = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <animated.div
-        style={props}
-        className="w-64 h-64 border-8 border-gray-300 rounded-full flex items-center justify-center"
-      >
-        {/* Add segments here */}
-        <div className="absolute w-full h-full">
-          {/* Example segments */}
-          <div className="absolute w-1/2 h-1/2 bg-red-500" style={{ transform: 'rotate(0deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-blue-500" style={{ transform: 'rotate(45deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-green-500" style={{ transform: 'rotate(90deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-yellow-500" style={{ transform: 'rotate(135deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-purple-500" style={{ transform: 'rotate(180deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-pink-500" style={{ transform: 'rotate(225deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-orange-500" style={{ transform: 'rotate(270deg)' }} />
-          <div className="absolute w-1/2 h-1/2 bg-teal-500" style={{ transform: 'rotate(315deg)' }} />
-        </div>
-      </animated.div>
-      <button
-        onClick={spin}
-        className="mt-8 p-2 bg-blue-500 text-white rounded"
-        disabled={spinning}
-      >
-        Spin the Wheel
-      </button>
+    <div>
+      
     </div>
   );
 };
 
-export default SpinWheel;
+export default SpinningWheel;

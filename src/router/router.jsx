@@ -13,6 +13,10 @@ import History from "../pages/history/History";
 import PasswordReset from "../pages/passwordReset/PasswordReset";
 import { DepositPage } from "../pages/deposit/DepositPage";
 import { WithdrowPage } from "../pages/withdraw/WithdrowPage";
+import Stakes from "../pages/games/stakes/Stakes";
+import DragonTower from "../pages/games/stakes/DragonTower";
+import Lucky from "../pages/games/lucky777/Lucky";
+import Plinko from "../pages/games/plinko/Plinko";
 
 
 
@@ -34,6 +38,22 @@ const router = createBrowserRouter([
         {
             path:'/spinnig',
             element:<SpinningWheel/>
+        },
+        {
+            path:'/stakes',
+            element:<Stakes/>
+        },
+        {
+            path:'/dragon-tower',
+            element:<DragonTower/>
+        },
+        {
+            path:'/lucky',
+            element:<Lucky/>
+        },
+        {
+            path:'/plinko',
+            element:<Plinko/>
         },
         {
             path:'/profile',

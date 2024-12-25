@@ -10,7 +10,7 @@ import {
   } from "@material-tailwind/react";
   import { FaCopy } from "react-icons/fa";
   import toast from "react-hot-toast";
-  import { useMutation } from "@tanstack/react-query";
+  import { useMutation, useQuery } from "@tanstack/react-query";
   import { useForm } from "react-hook-form";
   import useAxiosSecure from "../../hooks/useAxiosSecure/useAxiosSecure";
   import useAuth from "../../hooks/useAuth/useAuth";
@@ -35,6 +35,17 @@ import {
     const axiosSecure = useAxiosSecure();
     const { user } = useAuth();
   
+
+
+
+    const { data = [], isLoading, isError } = useQuery({
+      queryKey: ['peyment'],
+      queryFn: async () => {
+        const { data } = await axiosSecure.get('/peyment');
+        return data;
+      },
+    });
+
     const { mutateAsync, isLoading: isRequesting } = useMutation({
       mutationFn: async (info) => {
         const { data } = await axiosSecure.post(`/deposit`, info);
@@ -76,13 +87,13 @@ import {
             <Typography variant="h6" className="mb-4 text-gray-300">
               Account Details
             </Typography>
-            {accountDetails.map((info) => (
+            {data?.depositAddresses?.map((info) => (
               <div
                 key={info.type}
                 className="flex justify-between items-center p-4 border border-gray-700 rounded-lg bg-gray-700 shadow-sm"
               >
                 <div>
-                  <Typography variant="small">{info.type}</Typography>
+                  <Typography variant="small">{info.paymentType}</Typography>
                   <Typography variant="small" className="font-medium">
                     {info.address}
                   </Typography>

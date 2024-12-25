@@ -10,12 +10,12 @@ import GameCard from "../../../components/cards/GameCard";
 const games = [
   {
     image: img1,
-    path: "/",
+    path: "/lucky",
     title: "Game 1",
   },
   {
     image: img2,
-    path: "/",
+    path: "/stakes",
     title: "Game 2",
   },
   {
@@ -25,7 +25,7 @@ const games = [
   },
   {
     image: img4,
-    path: "/",
+    path: "/dragon-tower",
     title: "Game 4",
   },
   {

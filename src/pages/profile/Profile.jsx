@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
 
 const Profile = () => {
-  const {user,logOut}=useAuth()
+  const {user,logOut,userInfo}=useAuth()
 
 
 
@@ -54,13 +54,13 @@ const Profile = () => {
           {/* Win Balance */}
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-300">জিতের ব্যালেন্স</p>
-            <p className="text-xl font-bold text-green-400">৳ ৫০০</p>
+            <p className="text-xl font-bold text-green-400">৳ {userInfo?.winBalance}</p>
           </div>
 
           {/* Deposit Balance */}
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-300">ডিপোজিট ব্যালেন্স</p>
-            <p className="text-xl font-bold text-blue-400">৳ ১০০০</p>
+            <p className="text-xl font-bold text-blue-400">৳ {userInfo?.depositBalance}</p>
           </div>
         </div>
       </div>

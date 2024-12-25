@@ -66,12 +66,13 @@ const Support = () => {
           {data?.map((support, idx) => (
             <Link key={idx} to={support.link} target="_blank" rel="noopener noreferrer">
               <div
-                className={`w-full flex items-center justify-between p-4 border-2 rounded-lg border-${getThemeColor(
+                className={`w-full flex items-center my-4 justify-between p-4 border-2 rounded-lg border-${getThemeColor(
                   support?.name || ''
                 )}`}
               >
+                <img className='w-8' src={support?.icon} alt="" />
                 <span className="flex items-center gap-2">
-                  {support?.icon && <span className="text-lg">{support.icon}</span>}
+                
                   <span className="capitalize">{support?.name || 'Unknown'}</span>
                 </span>
                 <span className="font-semibold">Visit</span>
