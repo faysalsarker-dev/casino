@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth/useAuth';
 
 const Topbar = () => {
-    const {user}=useAuth()
+    const {user,userInfo , userInfoloading}=useAuth()
     return (
         <div className=" bg-background-dark px-2 py-4 flex justify-between items-center shadow-xl rounded-lg">
             {/* Logo Section */}
@@ -13,7 +13,7 @@ const Topbar = () => {
 
             {/* Balance Information and Buttons */}
             <div className="flex gap-3">
-    {!user && (
+    {!user ? (
 
 <>
         <button 
@@ -31,6 +31,17 @@ const Topbar = () => {
     
     
 </>
+    ):(
+        !userInfoloading ? (
+            <div className='text-white'>
+            {userInfo?.depositBalance || 0 }
+            <br />
+            {userInfo.winBalance || 0}
+        </div>
+        ):(
+            <p className='text-white'>Loading...</p>
+        )
+     
     )}
 
 

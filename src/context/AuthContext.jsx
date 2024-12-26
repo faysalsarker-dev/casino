@@ -23,6 +23,7 @@ const AuthContext = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userInfoloading, setuserInfoLoading] = useState(true);
 
   // Create user with email and password
   const createUser = async (email, password) => {
@@ -112,10 +113,11 @@ const AuthContext = ({ children }) => {
   };
 
   const fetchUserInfo = async (email) => {
+    setuserInfoLoading(true)
     try {
       const { data } = await axiosCommon.get(`/users/${email}`);
       setUserInfo(data);
-
+      setuserInfoLoading(false)
       // Generate and store JWT
       const loggedEmail = { email };
       const tokenResponse = await axiosSecure.post("/jwt", loggedEmail);
@@ -123,9 +125,12 @@ const AuthContext = ({ children }) => {
         console.log("Token stored successfully");
       }
     } catch (error) {
+      setuserInfoLoading(false)
       console.error("Error fetching user info:", error);
-    }
+    }finally{
+      setuserInfoLoading(false)
   };
+}
 
   // Monitor auth state and fetch user data
   useEffect(() => {
@@ -154,7 +159,9 @@ const AuthContext = ({ children }) => {
     logOut,
     loading,
     profileUpdate,
-    resetPassword
+    resetPassword,
+    userInfoloading,
+    setUserInfo
   };
 
   return (

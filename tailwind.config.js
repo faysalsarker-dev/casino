@@ -12,8 +12,8 @@ module.exports = withMT({
         primary: '#14805E', // Vibrant red
         secondary: '#21D07A', // Neon green
         background: {
-          DEFAULT: '#1E1E2E', // Dark gray
-          dark: '#14141C', // Deeper black for sections
+          DEFAULT: '#071D2A', // Dark gray
+          dark: '#1A2C38', // Deeper black for sections
         },
         accent: '#F9D648', // Vibrant yellow
         text: {
