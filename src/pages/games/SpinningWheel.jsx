@@ -1,95 +1,58 @@
-// import React, { useState } from 'react';
-// import { SpinWheel } from 'spin-wheel-game';
-
-// const segments = [
-//   { segmentText: '1x', segColor: '#FF4D4D' },
-//   { segmentText: '2x', segColor: '#4D79FF' },
-//   { segmentText: '0.5x', segColor: '#4DFF88' },
-//   { segmentText: '10x', segColor: '#FF4D4D' },
-//   { segmentText: '0.0x', segColor: '#4D79FF' },
-//   { segmentText: '2x', segColor: '#4DFF88' },
-//   { segmentText: '1x', segColor: '#4DFF88' },
-//   { segmentText: '0.10x', segColor: '#4DFF88' },
-// ];
-
-// const SpinningWheel = () => {
-//   const [spinResult, setSpinResult] = useState(null);
-
-//   const handleSpinFinish = (result) => {
-//     setSpinResult(result);
-//     console.log(`Spun to: ${result}`);
-//     // Additional logic for custom results (e.g., update user balance)
-//   };
-
-//   const spinWheelProps = {
-//     segments,
-//     onFinished: handleSpinFinish,
-//     primaryColor: 'linear-gradient(45deg, #333333, #000000)', // Dark theme
-//     contrastColor: '#FFFFFF', // Text color
-//     buttonText: 'Spin & Win!',
-//     isOnlyOnce: false,
-//     size: 300,
-//     upDuration: 150,
-//     downDuration: 700,
-//     fontFamily: 'Arial, sans-serif',
-//     arrowLocation: 'top',
-//     showTextOnSpin: true,
-//     isSpinSound: true,
-//   };
-
-//   return (
-//     <div
-//       style={{
-//         display: 'flex',
-//         flexDirection: 'column',
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//         minHeight: '100vh',
-//         backgroundColor: '#1A1A1A', // Casino background
-//         color: '#FFF',
-//         fontFamily: 'Arial, sans-serif',
-//       }}
-//     >
-//       <h1 style={{ marginBottom: '20px', textShadow: '0px 0px 10px #FF4D4D' }}>
-//         Spin the Wheel and Win Big!
-//       </h1>
-//       <div
-//         style={{
-//           boxShadow: '0px 0px 20px 5px rgba(255, 255, 255, 0.5)',
-//           borderRadius: '50%',
-//           padding: '10px',
-//           background: 'radial-gradient(circle, #222222, #111111)',
-//         }}
-//       >
-//         <SpinWheel {...spinWheelProps} />
-//       </div>
-//       {spinResult && (
-//         <div
-//           style={{
-//             marginTop: '20px',
-//             padding: '10px 20px',
-//             borderRadius: '8px',
-//             background: 'rgba(255, 255, 255, 0.1)',
-//             boxShadow: '0px 0px 10px #FF4D4D',
-//           }}
-//         >
-//           <h3>Congratulations! 🎉</h3>
-//           <p>
-//             You won <strong>{spinResult}</strong>!
-//           </p>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default SpinningWheel;
-import React from 'react';
+import React, { useState } from 'react';
+import { Wheel } from 'react-custom-roulette';
 
 const SpinningWheel = () => {
+  const [mustSpin, setMustSpin] = useState(false);
+  const [prizeNumber, setPrizeNumber] = useState(0);
+
+  const segments = [
+    { option: '0$', style: { backgroundColor: '#FFC107', textColor: '#fff' } },
+    { option: '1000$', style: { backgroundColor: '#FF5722', textColor: '#fff' } },
+    { option: '10$', style: { backgroundColor: '#FF9800', textColor: '#fff' } },
+    { option: '5$', style: { backgroundColor: '#8BC34A', textColor: '#fff' } },
+    { option: '20$', style: { backgroundColor: '#009688', textColor: '#fff' } },
+    { option: '1$', style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
+    { option: '100$', style: { backgroundColor: '#E91E63', textColor: '#fff' } },
+    { option: '50$', style: { backgroundColor: '#9C27B0', textColor: '#fff' } },
+  ];
+
+  const handleSpinClick = () => {
+    const randomPrize = Math.floor(Math.random() * segments.length);
+    setPrizeNumber(randomPrize);
+    setMustSpin(true);
+  };
+
   return (
-    <div>
-      
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800">
+      {/* Ball in the center */}
+      <div className="relative">
+        <Wheel
+          mustStartSpinning={mustSpin}
+          prizeNumber={prizeNumber}
+          data={segments}
+          onStopSpinning={() => {
+            setMustSpin(false);
+            alert(`Congratulations! You won ${segments[prizeNumber].option}`);
+          }}
+          outerBorderColor="#fff"
+          outerBorderWidth={10}
+          radiusLineWidth={5}
+          radiusLineColor="#ccc"
+          textColors={['#fff']}
+          fontSize={25}
+          perpendicularText={'spin'}
+          spinDuration={0.6} // Fast spin duration
+        />
+        {/* Ball */}
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg z-10" >spin</div>
+      </div>
+
+      <button
+        onClick={handleSpinClick}
+        className="mt-5 px-6 py-2 bg-blue-500 text-white font-bold rounded shadow hover:bg-blue-600 transition duration-200"
+      >
+        Spin
+      </button>
     </div>
   );
 };
