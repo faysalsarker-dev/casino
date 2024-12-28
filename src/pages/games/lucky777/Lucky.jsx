@@ -2,6 +2,10 @@ import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
 import { Typography } from '@material-tailwind/react';
+import useAuth from '../../../hooks/useAuth/useAuth';
+import { useMutation } from '@tanstack/react-query';
+import useAxiosSecure from '../../../hooks/useAxiosSecure/useAxiosSecure';
+import toast from 'react-hot-toast';
 
 // Array of symbols for the slot machine
 const symbols = ['🍒', '🍋', '🍊'];
@@ -67,19 +71,54 @@ const Lucky777 = () => {
   const symbolHeight = 112; // Dynamically adjust symbol height here
   const [reels, setReels] = useState(['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(false);
-  const [balance, setBalance] = useState(100);
+  const {userInfo, setUserInfo,user} = useAuth();
+  const [betAmount, setBetAmount] = useState(10);
   const [message, setMessage] = useState('');
   const spinSound = useRef(new Audio('/spin.mp3')); // Add spin sound file
-  const winSound = useRef(new Audio('/win.mp3')); // Add win sound file
+  const winSound = useRef(new Audio('/win.mp3'));
+  const axiosSecure = useAxiosSecure()
+  
+  
+  const { mutateAsync: gameStart } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-start`, info);
+  return data
+    },
+    onSuccess:(data)=>{
+  
+      setUserInfo(data)
+    },
+    onError: () => {
+     
+      toast.error("An error occurred while submitting your request.");
+    },
+  });
+
+  const { mutateAsync: gameLost } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-lost`, info);
+      return data;
+    },
+  });
+  const { mutateAsync: gameWin } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-win`, info);
+      return data;
+    },
+    onSuccess: (data) => {
+      
+      setUserInfo(data.user);
+    }
+  });
 
   const spinReels = () => {
-    if (spinning || balance < 10) {
-      if (balance < 10) setMessage('Insufficient balance! Please reset.');
-      return;
+    const gameInfo ={
+      userEmail: user?.email,
+      betAmount: betAmount,
     }
+    gameStart(gameInfo)
 
     setSpinning(true);
-    setBalance(balance - 10);
     setMessage('');
     spinSound.current.play();
 
@@ -92,22 +131,23 @@ const Lucky777 = () => {
     }, 2000); // Shorter spin duration
   };
 
-  const checkWin = (newReels) => {
+  const checkWin = async(newReels) => {
     if (newReels.every((symbol) => symbol === '7️⃣')) {
-      setBalance(balance + 100);
+      await gameWin({ userEmail: user?.email ,betAmount ,winAmount:400,status:"win" ,gameName:"Lucky777"});
       setMessage('Jackpot! You won 100!');
       winSound.current.play();
     } else if (newReels[0] === newReels[1] && newReels[1] === newReels[2]) {
-      setBalance(balance + 50);
+      await gameWin({ userEmail: user?.email ,betAmount,winAmount:100 ,status:"win" ,gameName:"Lucky777"});
       setMessage('You won 50!');
       winSound.current.play();
     } else {
+      await gameLost({ userEmail: user?.email, betAmount ,status:"lost" ,gameName:"Lucky777"});
       setMessage('Try again!');
     }
   };
 
   const resetGame = () => {
-    setBalance(100);
+    
     setReels(['🍒', '🍋', '🍊']);
     setMessage('');
   };
@@ -131,9 +171,9 @@ const Lucky777 = () => {
         <button
           onClick={spinReels}
           className={`px-8 py-3 bg-red-500 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-105 transition-transform ${
-            spinning || balance < 10 ? 'opacity-50 cursor-not-allowed' : ''
+            spinning  ? 'opacity-50 cursor-not-allowed' : ''
           }`}
-          disabled={spinning || balance < 10}
+          disabled={spinning }
         >
           Spin
         </button>
@@ -144,7 +184,7 @@ const Lucky777 = () => {
           Reset
         </button>
       </div>
-      <div className="text-2xl mb-4 font-mono">Balance: ${balance}</div>
+      <div className="text-2xl mb-4 font-mono">Balance:</div>
       {message && (
         <motion.div
           className="text-3xl text-yellow-400 font-bold"

@@ -2,6 +2,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import egg from "../.../../../../images/egg.png";
 import bomb from "../.../../../../images/bomb.png";
+import { Button } from "@material-tailwind/react";
+import { useMutation } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure/useAxiosSecure";
+import useAuth from "../../../hooks/useAuth/useAuth";
 
 const DragonTower = () => {
   const [currentLevel, setCurrentLevel] = useState(0);
@@ -9,11 +13,14 @@ const DragonTower = () => {
   const [gameOver, setGameOver] = useState(false);
   const [won, setWon] = useState(false);
   const [difficulty, setDifficulty] = useState("easy");
+  const [betAmount, setBetAmount] = useState(10);
+  const [gameStarted, setGameStarted] = useState(false);
+  const axiosSecure = useAxiosSecure();
+  const { user, setUserInfo } = useAuth();
 
   const difficultyConfig = {
-    easy: { boxes: 4, booms: 1 },
+    easy: { boxes: 3, booms: 1 },
     medium: { boxes: 3, booms: 2 },
-    hard: { boxes: 3, booms: 1 },
   };
 
   const { boxes, booms } = difficultyConfig[difficulty];
@@ -33,8 +40,39 @@ const DragonTower = () => {
 
   const [tower, setTower] = useState(generateTower);
 
+  const { mutateAsync: gameStart } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-start`, info);
+      return data;
+    },
+    onSuccess: (data) => {
+      setGameStarted(true);
+      setUserInfo(data);
+    },
+    onError: () => {
+      setGameStarted(false);
+    },
+  });
+
+  const { mutateAsync: gameLost } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-lost`, info);
+      return data;
+    },
+  });
+
+  const { mutateAsync: gameWin } = useMutation({
+    mutationFn: async (info) => {
+      const { data } = await axiosSecure.post(`/game/games-win`, info);
+      return data;
+    },
+    onSuccess: (data) => {
+      setUserInfo(data.user);
+    },
+  });
+
   const handleTileClick = (index) => {
-    if (gameOver || won) return;
+    if (!gameStarted || gameOver || won) return;
 
     const isSafe = tower[currentLevel][index];
     const newSelectedPath = [...selectedPath, { level: currentLevel, index, isSafe }];
@@ -43,12 +81,26 @@ const DragonTower = () => {
     if (isSafe) {
       if (currentLevel === tower.length - 1) {
         setWon(true);
+        gameWin({ userEmail: user?.email ,betAmount ,status:"win" ,gameName:"dragon tawor"});
       } else {
         setCurrentLevel(currentLevel + 1);
       }
     } else {
       setGameOver(true);
+      gameLost({ userEmail: user?.email, betAmount ,status:"lost" ,gameName:"dragon tawor"});
     }
+  };
+
+  const handleGameStart = () => {
+    if (betAmount < 10) {
+      alert("Minimum bet amount is 10.");
+      return;
+    }
+    const gameInfo ={
+      userEmail: user?.email,
+      betAmount: betAmount,
+    }
+    gameStart(gameInfo);
   };
 
   const handleRestart = () => {
@@ -56,6 +108,7 @@ const DragonTower = () => {
     setSelectedPath([]);
     setGameOver(false);
     setWon(false);
+    setGameStarted(false);
     setTower(generateTower());
   };
 
@@ -68,6 +121,18 @@ const DragonTower = () => {
     <div className="flex flex-col items-center min-h-screen bg-gray-900 text-white">
       <h1 className="text-4xl font-bold my-8">Dragon Tower</h1>
 
+      <div className="mb-4">
+        <label className="block text-sm font-bold mb-2">Bet Amount</label>
+        <input
+          type="number"
+          value={betAmount}
+          disabled={gameStarted}
+          onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
+          className="w-full p-2 text-gray-900 rounded bg-gray-200"
+          min="10"
+        />
+      </div>
+
       <div className="mb-6">
         <label htmlFor="difficulty" className="mr-4 text-lg">
           Select Difficulty:
@@ -76,24 +141,30 @@ const DragonTower = () => {
           id="difficulty"
           value={difficulty}
           onChange={handleDifficultyChange}
+          disabled={gameStarted}
           className="px-4 py-2 rounded-md bg-gray-800 text-white focus:outline-none"
         >
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
         </select>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 w-full max-w-md">
+      <Button
+        onClick={handleGameStart}
+        disabled={gameStarted}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+      >
+        {gameStarted ? "Game In Progress" : "Start Game"}
+      </Button>
+
+      {/* Tower Grid */}
+      <div className="grid grid-cols-1 gap-4 w-full max-w-md mt-6">
         {tower.map((level, levelIndex) => (
           <motion.div
             key={levelIndex}
             className={`flex justify-center gap-4 ${
               levelIndex === currentLevel ? "ring-4 ring-blue-500 p-2" : ""
             }`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: levelIndex * 0.2 }}
           >
             {level.map((tile, tileIndex) => {
               const isSelected = selectedPath.some(
@@ -103,29 +174,18 @@ const DragonTower = () => {
                 (p) => p.level === levelIndex && p.index === tileIndex
               );
 
-              const showBoom =
-                gameOver && !isSelected && !tile; 
-              const showBox =
-                gameOver && !isSelected && tile; 
-
               return (
                 <motion.div
                   key={tileIndex}
                   className={`w-16 h-16 flex items-center justify-center rounded-md cursor-pointer ${
                     isSelected
                       ? result?.isSafe
-                        ? "bg-gray-800"
-                        : "bg-gray-800"
-                      : showBoom
-                      ? "bg-red-500"
-                      : showBox
-                      ? "bg-green-500"
+                        ? "bg-green-500"
+                        : "bg-red-500"
                       : levelIndex === currentLevel
                       ? "bg-gray-700 hover:bg-gray-600"
                       : "bg-gray-800"
                   }`}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
                   onClick={() => levelIndex === currentLevel && handleTileClick(tileIndex)}
                 >
                   {isSelected &&
@@ -134,8 +194,6 @@ const DragonTower = () => {
                     ) : (
                       <img src={bomb} className="w-full" alt="bomb" />
                     ))}
-                  {showBoom && <img src={bomb} className="w-full" alt="bomb" />}
-                  {showBox && <img src={egg} className="w-full" alt="egg" />}
                 </motion.div>
               );
             })}
