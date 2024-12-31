@@ -6,12 +6,12 @@ import winImage from '../../images/winning.png';
 const Winning = ({ amount = 100 }) => {
   const [isVisible, setIsVisible] = useState(true);
 
-  // Auto-close the winning screen after 2 seconds (faster)
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
      
-    }, 2000); 
+    }, 3000); 
 
     return () => clearTimeout(timer); 
   }, []);
