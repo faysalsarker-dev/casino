@@ -27,7 +27,8 @@
     "react-spinners": "^0.15.0",
     "spin-wheel-game": "^1.0.3-alpha.3",
     "sweetalert2": "^11.15.3",
-    "swiper": "^11.1.15"
+    "swiper": "^11.1.15",
+    "use-sound": "^4.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.15.0",

@@ -88,18 +88,18 @@ const Profile = () => {
         <div className="bg-gray-800 shadow-md rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">প্রোফাইল</h3>
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outlined" color="green" className="w-full flex items-center justify-center">
+            <Button variant="outlined"  className="w-full border-border border-2 flex items-center justify-center">
               <AiOutlineUser className="mr-2" /> ব্যাক্তিগত তথ্য
             </Button>
           <Link to='/reset'>
-              <Button variant="outlined" color="green" className="w-full flex items-center justify-center">
+              <Button variant="outlined"  className="w-full border-border border-2 flex items-center justify-center">
                 <AiOutlineKey className="mr-2" /> পাসওয়ার্ড রিসেট করুন
               </Button>
           </Link>
-            <Button variant="outlined" color="green" className="w-full flex items-center justify-between">
+            <Button variant="outlined"  className="w-full flex items-center justify-between">
               <MdOutlineInbox className="mr-2" /> ইনবক্স <span className="ml-2 bg-primary text-white text-xs px-2 py-1 rounded-full">2</span>
             </Button>
-            <Button variant="outlined" color="green" className="w-full flex items-center justify-center">
+            <Button variant="outlined"  className="w-full border-border border-2 flex items-center justify-center">
               <BsPeopleFill className="mr-2" /> রেফারেল
             </Button>
           </div>

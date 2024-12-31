@@ -6,7 +6,10 @@ import bomb from "../../../images/bomb.png";
 import { useMutation } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth/useAuth";
-
+import bombSoundFile from "../../../audio/bomb.m4a";
+import gemSoundFile from "../../../audio/gem.m4a";
+import useSound from "use-sound";
+import Winning from "../../../components/winning/Winning";
 const Stakes = () => {
   const [bombs, setBombs] = useState(3);
   const [betAmount, setBetAmount] = useState(10);
@@ -15,18 +18,27 @@ const Stakes = () => {
   const [rows, setRows] = useState(0);
   const [columns, setColumns] = useState(0);
   const [disablility, setDisablility] = useState(false);
-console.log(bombIndexes);
+const [gameOver, setGameOver] = useState(false); 
 
+console.log(bombIndexes);
   const { user, userInfo,setUserInfo } = useAuth();
   const axiosSecure = useAxiosSecure();
-
+  const [playBombSound] = useSound(bombSoundFile);
+  const [playGemSound] = useSound(gemSoundFile);
   
   useEffect(() => {
     const totalCells = bombs * 10;
-    const calculatedRows = Math.ceil(Math.sqrt(totalCells));
-    const calculatedColumns = Math.ceil(totalCells / calculatedRows);
-    setRows(calculatedRows);
-    setColumns(calculatedColumns);
+    if(bombs ===1){
+      setRows(2);
+    setColumns(5);
+      return 
+    }else{
+      const calculatedRows = Math.ceil(Math.sqrt(totalCells));
+      const calculatedColumns = Math.ceil(totalCells / calculatedRows);
+      setRows(calculatedRows);
+      setColumns(calculatedColumns);
+    }
+   
   }, [bombs]);
 
   const generateBombIndexes = (totalCells, numBombs) => {
@@ -58,6 +70,7 @@ console.log(bombIndexes);
       const { data } = await axiosSecure.post(`/game/games-lost`, info);
       return data;
     },
+    
   });
   const { mutateAsync: gameWin } = useMutation({
     mutationFn: async (info) => {
@@ -65,7 +78,7 @@ console.log(bombIndexes);
       return data;
     },
     onSuccess: (data) => {
-      
+      clearGame()
       setUserInfo(data.user);
     }
   });
@@ -89,29 +102,43 @@ const gameInfo ={
   };
 
   const handleCellClick = (index) => {
-    if (revealed.includes(index)) return;
+    if (revealed.includes(index) || gameOver) return;
   
     const isBomb = bombIndexes.includes(index);
   
     if (isBomb) {
-      gameLost({ userEmail: user?.email, betAmount ,status:"lost" ,gameName:"mines"});
+      playBombSound();
+      gameLost({ userEmail: user?.email, betAmount, status: "lost", gameName: "mines" });
       toast.error("💥 Boom! You hit a bomb!");
-      setRevealed([...revealed, index]);
-      return; 
+      setRevealed(Array.from({ length: rows * columns }, (_, i) => i));
+     setDisablility(true)
+      setGameOver(true); 
+      setDisablility(true); 
+      return;
     }
   
+    playGemSound();
     const updatedRevealed = [...revealed, index];
     setRevealed(updatedRevealed);
   
-    
     const totalCells = rows * columns;
     const nonBombCells = totalCells - bombs;
     if (updatedRevealed.length === nonBombCells) {
-      gameWin({ userEmail: user?.email ,betAmount ,status:"win" ,gameName:"Stakes"});
-      toast.success("🎉 Congratulations! You won the game!");
+      Winning({ amount: betAmount * 10 });
+      setGameOver(true);
+      setDisablility(true); 
+      gameWin({ userEmail: user?.email, winAmount: betAmount * 10, status: "win", gameName: "Stakes" });
     }
   };
   
+  
+  
+  const clearGame = () => {
+
+    setBombIndexes([]);
+    setRevealed([]);
+    setDisablility(false);
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -163,38 +190,41 @@ const gameInfo ={
             .fill(null)
             .map((_, index) => (
               <motion.button
-                key={index}
-                onClick={() => handleCellClick(index)}
-                disabled={revealed.includes(index)}
-                className={`h-16 w-16 flex items-center justify-center rounded ${
-                  revealed.includes(index)
-                    ? bombIndexes.includes(index)
-                      ? "bg-red-500"
-                      : "bg-gray-800"
-                    : "bg-gray-700 hover:bg-gray-600"
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                {revealed.includes(index) && bombIndexes.includes(index) && (
-                  <motion.img
-                    src={bomb}
-                    alt="bomb"
-                    initial={{ scale: 0, rotate: 180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-                {revealed.includes(index) && !bombIndexes.includes(index) && (
-                  <motion.img
-                    src={gem}
-                    alt="gem"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-              </motion.button>
+              key={index}
+              onClick={() => handleCellClick(index)}
+              disabled={gameOver}
+              className={`h-16 w-16 flex items-center justify-center rounded ${
+                revealed.includes(index)
+                  ? bombIndexes.includes(index)
+                  ? "bg-red-500"
+                  : "bg-gray-800"
+        
+                  : "bg-gray-700 hover:bg-gray-600" // Default hidden state
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {revealed.includes(index) && bombIndexes.includes(index) && (
+                <motion.img
+                  src={bomb}
+                  alt="bomb"
+                  initial={{ scale: 0, rotate: 180 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  transition={{ duration: 0.5 }}
+                />
+              )}
+              {revealed.includes(index) && !bombIndexes.includes(index) && (
+                <motion.img
+                  src={gem}
+                  alt="gem"
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                />
+              )}
+            </motion.button>
+            
+            
             ))}
         </div>
       </div>

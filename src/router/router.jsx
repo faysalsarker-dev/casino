@@ -16,7 +16,7 @@ import { WithdrowPage } from "../pages/withdraw/WithdrowPage";
 import Stakes from "../pages/games/stakes/Stakes";
 import DragonTower from "../pages/games/stakes/DragonTower";
 import Lucky from "../pages/games/lucky777/Lucky";
-import Plinko from "../pages/games/plinko/Plinko";
+
 
 
 
@@ -50,10 +50,6 @@ const router = createBrowserRouter([
         {
             path:'/lucky',
             element:<Lucky/>
-        },
-        {
-            path:'/plinko',
-            element:<Plinko/>
         },
         {
             path:'/profile',

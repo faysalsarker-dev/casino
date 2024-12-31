@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import { Typography } from '@material-tailwind/react';
+import { Input, Typography } from '@material-tailwind/react';
 import useAuth from '../../../hooks/useAuth/useAuth';
 import { useMutation } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure/useAxiosSecure';
@@ -146,11 +146,7 @@ const Lucky777 = () => {
     }
   };
 
-  const resetGame = () => {
-    
-    setReels(['🍒', '🍋', '🍊']);
-    setMessage('');
-  };
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-black to-gray-900 text-white">
@@ -167,7 +163,20 @@ const Lucky777 = () => {
           <Reel key={index} isSpinning={spinning} finalSymbol={symbol} symbolHeight={symbolHeight} />
         ))}
       </div>
-      <div className="flex space-x-6 mb-6">
+      <div className='w-full bg-primary text-center p-4'>
+<Typography variant='h4'>        Try your luck! Bet 10 and win 50</Typography>
+      </div>
+      <div className="flex space-x-6 mb-6 mt-2 w-full ">
+        <div>
+        <Input
+        placeholder="enter your bet amount"
+       type='number'
+        className="text-white appearance-none !border-t-white placeholder:text-white placeholder:opacity-100 focus:!border-t-gray-900 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        labelProps={{
+          className: "before:content-none after:content-none",
+        }}
+      />
+        </div>
         <button
           onClick={spinReels}
           className={`px-8 py-3 bg-red-500 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-105 transition-transform ${
@@ -177,14 +186,9 @@ const Lucky777 = () => {
         >
           Spin
         </button>
-        <button
-          onClick={resetGame}
-          className="px-8 py-3 bg-green-500 hover:bg-green-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-105 transition-transform"
-        >
-          Reset
-        </button>
+      
       </div>
-      <div className="text-2xl mb-4 font-mono">Balance:</div>
+     
       {message && (
         <motion.div
           className="text-3xl text-yellow-400 font-bold"
