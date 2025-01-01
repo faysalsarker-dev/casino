@@ -10,7 +10,7 @@ import bombSoundFile from "../../../audio/bomb.m4a";
 import gemSoundFile from "../../../audio/gem.m4a";
 import useSound from "use-sound";
 import Winning from "../../../components/winning/Winning";
-import { Button, Input, Option, Select } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 
 
 const GAME_NAME = "mins";
@@ -34,9 +34,11 @@ const [gaming, setGaming] = useState(() => JSON.parse(localStorage.getItem(`${GA
   const [playGemSound] = useSound(gemSoundFile);
   
   useEffect(() => {
+  if(!gaming){
     clearGame()
+  }
     const totalCells = bombs * 10;
-    if (bombs === 1) {
+    if (bombs == 1) {
       setRows(2);
       setColumns(5);
     } else {
@@ -45,6 +47,7 @@ const [gaming, setGaming] = useState(() => JSON.parse(localStorage.getItem(`${GA
       setRows(calculatedRows);
       setColumns(calculatedColumns);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bombs]);
 
   useEffect(() => {
@@ -169,104 +172,104 @@ const clearData =()=>{
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen  text-text-primary">
       {showWinningScreen && <Winning amount={betAmount * 10} />}
-      <div className="p-4 flex flex-col items-center gap-6">
-      <div className=" bg-gray-900 rounded-lg shadow-lg w-full max-w-sm space-y-6">
+      <div className="flex flex-col items-center gap-6 p-2">
+     <div className="w-full h-2/3 bg-background-section p-2 rounded-lg">
+        
+          <div
+            className={`grid gap-2  `}
+            style={{
+              gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+            }}
+          >
+            {Array(rows * columns)
+              .fill(null)
+              .map((_, index) => (
+                <motion.button
+                  key={index}
+                  onClick={() => handleCellClick(index)}
+                  disabled={!gaming}
+                  className={`h-16 w-16 flex items-center justify-center rounded ${
+                    revealed.includes(index)
+                      ? bombIndexes.includes(index)
+                        ? "bg-red-500"
+                        : "bg-background-secondary"
+                      : " bg-[#557086] hover:bg-gray-600"
+                  }`}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  {revealed.includes(index) && bombIndexes.includes(index) && (
+                    <motion.img
+                      src={bomb}
+                      alt="bomb"
+                      initial={{ scale: 0, rotate: 180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  )}
+                  {revealed.includes(index) && !bombIndexes.includes(index) && (
+                    <motion.img
+                      src={gem}
+                      alt="gem"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
+                  )}
+                </motion.button>
+              ))}
+          </div>
+     </div>
+
+        <div className="p-4 h-1/3 mb-10 bg-background-section rounded-lg shadow-lg w-full  space-y-6">
       {/* Bet Amount Field */}
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
-          Bet Amount ( minium 10 )
-        </label>
-        <Input
-          type="number"
-          value={betAmount}
-          disabled={gaming}
-          onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
-        className="bg-[#0F212E] text-black"
-          color="green"
+      <div className="flex justify-between items-center gap-4">
+  <div className="w-1/2">
+    <label className="block text-sm font-medium mb-1">Bet Amount (10 min)</label>
+    <input
+      type="number"
+      value={betAmount}
+      disabled={gaming}
+      onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
+      className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
+      min="10"
+    />
+  </div>
 
-          size="lg"
-          label="Enter bet amount"
-          min="10"
-        />
-      </div>
-
-      {/* Bombs Selection */}
-      <div>
-        <label className="block text-sm font-medium text-gray-300 mb-2">
+  <div className="w-1/2">
+    <label className="block text-sm font-medium  mb-2">
           Bombs
         </label>
-        <Select
+        <select
           value={bombs}
-          disabled={gaming}
-          onChange={(value) => setBombs(parseInt(value))}
-          className="text-black"
-          color="green"
-          size="lg"
-          label="Select bombs"
+         disabled={gaming}
+         
+         onChange={(e) => setBombs(e.target.value)}
+      className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
         >
-          <Option value={1}>1</Option>
-          <Option value={2}>2</Option>
-          <Option value={3}>3</Option>
-        </Select>
-      </div>
+            <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+        </select>
+  </div>
+</div>
+
+     
+      
 
       {/* Start Game Button */}
       <Button
         disabled={gaming}
         onClick={handleStartGame}
         
-        className='bg-primary text-white w-full'
+        className='bg-primary w-full'
         size="lg"
       >
-        Start Game
+        {gaming ? "Game In Progress" : "Start Game"}
       </Button>
     </div>
-        <div
-          className={`grid gap-2`}
-          style={{
-            gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-          }}
-        >
-          {Array(rows * columns)
-            .fill(null)
-            .map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => handleCellClick(index)}
-                disabled={!gaming}
-                className={`h-16 w-16 flex items-center justify-center rounded ${
-                  revealed.includes(index)
-                    ? bombIndexes.includes(index)
-                      ? "bg-red-500"
-                      : "bg-gray-800"
-                    : "bg-gray-700 hover:bg-gray-600"
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                {revealed.includes(index) && bombIndexes.includes(index) && (
-                  <motion.img
-                    src={bomb}
-                    alt="bomb"
-                    initial={{ scale: 0, rotate: 180 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-                {revealed.includes(index) && !bombIndexes.includes(index) && (
-                  <motion.img
-                    src={gem}
-                    alt="gem"
-                    initial={{ opacity: 0, scale: 0.5 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                  />
-                )}
-              </motion.button>
-            ))}
-        </div>
       </div>
     </div>
   );

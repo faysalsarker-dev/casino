@@ -39,8 +39,8 @@ const games = [
 
 const GameSec = () => {
   return (
-    <div className="px-4 py-6">
-      <Typography variant="h2" className="mb-4 text-start pl-2 border-l-4 border-l-primary text-text-white">
+    <div className="px-4 py-6 text-text-primary">
+      <Typography variant="h2" className="mb-4 text-start pl-2 border-l-4 border-l-text-text-primary text-text-white">
         Games
       </Typography>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">

@@ -1,34 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import useAuth from "../../hooks/useAuth/useAuth";
-import useAxiosSecure from "../../hooks/useAxiosSecure/useAxiosSecure";
-import { Card, CardBody } from "@material-tailwind/react";
 import Skeleton from "react-loading-skeleton";
-import useAxios from "../../hooks/useAxios/useAxios";
-const TABLE_HEAD = ["Payment Type", "amount", "Number", "Status"];
+import PropTypes from "prop-types";
 
-const History = () => {
-    const axiosSecure = useAxiosSecure();
-    const axiosCommon = useAxios()
-    const { user } = useAuth();
-      const { data = [], isLoading, isError, refetch } = useQuery({
-        queryKey: ["my-withdrawals"],
-        queryFn: async () => {
-          const { data } = await axiosCommon.get(`/withdraw`);
-          return data;
-        },
-      });
-      console.log(data);
-    return (
-        <div>
-               <Card className="overflow-hidden bg-gray-800">
-        <CardBody className="p-0 overflow-x-auto">
-          <table className="w-full table-auto text-left text-gray-300">
+const TABLE_HEAD = ["Type", "Amount", "Number", "Status"];
+
+const History = ({ info, isError, isLoading }) => {
+
+
+  return (
+    <div>
+      <div className="overflow-hidden mt-10 bg-background">
+        <div className="p-0 overflow-x-auto">
+          <table className="w-full table-auto text-center text-text-primary">
             <thead>
-              <tr className="bg-gray-700">
+              <tr className="bg-background-section">
                 {TABLE_HEAD.map((head) => (
                   <th
                     key={head}
-                    className="px-4 py-2 text-sm font-semibold text-gray-400"
+                    className="px-2 py-2 text-sm font-semibold text-gray-400"
                   >
                     {head}
                   </th>
@@ -40,7 +28,7 @@ const History = () => {
                 Array.from({ length: 5 }).map((_, index) => (
                   <tr key={index} className="border-b border-gray-700">
                     {TABLE_HEAD.map((_, i) => (
-                      <td key={i} className="px-4 py-2">
+                      <td key={i} className="px-2 py-2">
                         <Skeleton height={20} />
                       </td>
                     ))}
@@ -55,31 +43,40 @@ const History = () => {
                     Something went wrong. Please try again later.
                   </td>
                 </tr>
-              ) : Array.isArray(data) && data.length === 0 ? (
+              ) : Array.isArray(info) && info.length === 0 ? (
                 <tr>
                   <td
                     colSpan={TABLE_HEAD.length}
                     className="px-4 py-4 text-center text-gray-400"
                   >
-                    You have no withdrawal requests yet.
+                    You have no requests yet.
                   </td>
                 </tr>
-              ) : Array.isArray(data?.withdraws) && data?.withdraws?.length > 0 ? (
-                data?.withdraws.map(({ paymentType, transactionCode, number, status }, index) => {
-                  const isLast = index === data.length - 1;
+              ) : Array.isArray(info) && info.length > 0 ? (
+                info.map(({ type, amount, number, status }, index) => {
+                  const isLast = index === info.length - 1;
                   const rowClass = isLast ? "" : "border-b border-gray-700";
 
                   return (
-                    <tr key={transactionCode} className={rowClass}>
-                      <td className="px-4 py-2 text-sm">{paymentType}</td>
-                      <td className="px-4 py-2 text-sm">{transactionCode}</td>
-                      <td className="px-4 py-2 text-sm">{number}</td>
+                    <tr
+                      key={index}
+                      className={`${rowClass} ${
+                        index % 2
+                          ? "bg-background-section"
+                          : "bg-background-secondary"
+                      }`}
+                    >
+                      <td className="px-4 py-2 text-sm">{type}</td>
+                      <td className="px-4 py-2 text-sm">{amount}</td>
+                      <td className="px-4 py-2 text-sm">
+                        {number.slice(0, 3)}**{number.slice(-3)}
+                      </td>
                       <td className="px-4 py-2 text-sm">
                         <span
                           className={`py-1 px-2 rounded-full text-xs font-medium ${
                             status === "Success"
-                              ? "bg-green-700 text-green-300"
-                              : "bg-yellow-700 text-yellow-300"
+                              ? "text-green-300"
+                              : "text-yellow-300"
                           }`}
                         >
                           {status}
@@ -100,10 +97,24 @@ const History = () => {
               )}
             </tbody>
           </table>
-        </CardBody>
-      </Card>
         </div>
-    );
+      </div>
+    </div>
+  );
+};
+
+
+History.propTypes = {
+  info: PropTypes.arrayOf(
+    PropTypes.shape({
+      type: PropTypes.string.isRequired,
+      amount: PropTypes.number.isRequired,
+      number: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  isError: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
 };
 
 export default History;

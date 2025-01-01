@@ -35,16 +35,16 @@ const Support = () => {
   };
 
   return (
-    <div className="bg-gray-900 p-6 text-white">
+    <div className="bg-background p-6 text-text-primary">
       {/* Header Section */}
-      <div className="bg-primary p-4 rounded-lg mb-6">
+      <div className="bg-background-section p-4 rounded-lg mb-6">
         <h1 className="text-2xl font-bold">Support Center</h1>
         <p className="text-sm opacity-80">Connect with us through your preferred platform</p>
       </div>
 
       {/* Support Links */}
-      <div className="bg-gray-800 shadow-md rounded-lg p-6 space-y-6">
-        <h2 className="text-xl font-semibold">Support Links</h2>
+      <div className="bg-background-secondary shadow-md rounded-lg p-3 space-y-6">
+       
 
         {/* Links Section */}
         <div className="space-y-4">

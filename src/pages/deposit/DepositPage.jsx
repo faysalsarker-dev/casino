@@ -7,22 +7,37 @@ import {
   } from "@material-tailwind/react";
 import Request from "./Request";
 import Table from "./Table";
+import useAxios from "../../hooks/useAxios/useAxios";
+import { useQuery } from "@tanstack/react-query";
+import useAuth from "../../hooks/useAuth/useAuth";
 
 
 
 
    
   export function DepositPage() {
+
+    const axiosCommon = useAxios()
+    const { user } = useAuth();
+    const { data:info = [], isLoading, isError,refetch } = useQuery({
+        queryKey: ["my-deposit",user?.email],
+        queryFn: async () => {
+          const { data } = await axiosCommon.get(`/deposit/${user?.email}`);
+          return data;
+        },
+      });
+
+
     const data = [
       {
         label: "Make Request",
         value: "request",
-        desc: <Request/>,
+        desc: <Request refetch={refetch}/>,
       },
       {
         label: "Hisorty",
         value: "history",
-        desc: <Table/>,
+        desc: <Table data={info} isLoading={isLoading} isError={isError}/>,
       },
    
       
@@ -31,10 +46,10 @@ import Table from "./Table";
 
    
     return (
-      <Tabs value='request' className="px-4 mt-5" id="custom-animation" >
-        <TabsHeader>
+      <Tabs value='request' className="min-h-screen p-4 bg-background text-text-primary" id="custom-animation" >
+        <TabsHeader >
           {data.map(({ label, value }) => (
-            <Tab key={value} value={value}>
+            <Tab  key={value} value={value}>
               {label}
             </Tab>
           ))}
@@ -47,7 +62,7 @@ import Table from "./Table";
           }}
         >
           {data.map(({ value, desc }) => (
-            <TabPanel  key={value} value={value}>
+            <TabPanel className="p-0"  key={value} value={value}>
               {desc}
             </TabPanel>
           ))}

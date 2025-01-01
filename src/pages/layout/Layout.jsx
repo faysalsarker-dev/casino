@@ -7,7 +7,7 @@ import Topbar from "../../components/navigation/Topbar";
 
 const Layout = () => {
     return (
-        <div className="bg-background-dark min-h-screen">
+        <div className="bg-background min-h-screen">
             <Topbar/>
             <Outlet/>
             <Navbar/>

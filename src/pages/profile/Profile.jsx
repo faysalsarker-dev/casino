@@ -34,11 +34,11 @@ const Profile = () => {
   };
 
   return (
-    <div className=" p-4 text-white bg-gray-900">
+    <div className=" p-4 bg-background text-text-primary">
       {/* Header Section */}
-      <div className="bg-primary text-white p-4 rounded-lg mb-6">
+      <div className="bg-background-section p-4 rounded-lg mb-6">
         <div className="flex items-center space-x-4">
-          <img className="w-16 h-16 rounded-full" src="https://as2.ftcdn.net/v2/jpg/02/15/84/43/1000_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg" alt="" />
+          <img className="w-16 h-16 rounded-full" src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/17a628eb-7f4e-44d7-808a-0851ac0a53f2/a87b5d6b-54a0-440e-a540-6e75fecdbe18.png" alt="" />
           
           <div>
             <h1 className="text-xl font-bold">{user?.displayName || 'name'}</h1>
@@ -48,19 +48,19 @@ const Profile = () => {
       </div>
 
       {/* Main Wallet Section */}
-      <div className="bg-gray-800 shadow-md rounded-lg p-4 mb-6">
+      <div className="bg-background-secondary shadow-md rounded-lg p-4 mb-6">
         <h2 className="text-lg font-semibold">মেইন ওয়ালেট</h2>
         <div className="mt-4 space-y-4">
           {/* Win Balance */}
           <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-300">জিতের ব্যালেন্স</p>
-            <p className="text-xl font-bold text-green-400">৳ {userInfo?.winBalance}</p>
+            <p className="text-sm ">জিতের ব্যালেন্স</p>
+            <p className="text-xl font-bold text-primary">৳ {userInfo?.winBalance}</p>
           </div>
 
           {/* Deposit Balance */}
           <div className="flex justify-between items-center">
             <p className="text-sm text-gray-300">ডিপোজিট ব্যালেন্স</p>
-            <p className="text-xl font-bold text-blue-400">৳ {userInfo?.depositBalance}</p>
+            <p className="text-xl font-bold text-secondary">৳ {userInfo?.depositBalance}</p>
           </div>
         </div>
       </div>
@@ -68,16 +68,16 @@ const Profile = () => {
       {/* Sections */}
       <div className="space-y-6">
         {/* Deposit and Withdraw */}
-        <div className="bg-gray-800 shadow-md rounded-lg p-4">
+        <div className="bg-background-secondary shadow-md rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">তহবিল</h3>
           <div className="grid grid-cols-2 gap-4">
        <Link to='/deposit'>
-              <Button variant="filled" color="blue" className="w-full flex items-center justify-center">
+              <Button variant="filled" className="w-full bg-secondary flex items-center justify-center">
                 <FaCreditCard className="mr-2" /> ডিপোজিট
               </Button>
        </Link>
        <Link to='/withdraw'>
-              <Button variant="outlined" color="blue" className="w-full flex items-center justify-center">
+              <Button variant="outlined" className="w-full bg-primary text-text-primary flex items-center justify-center">
                 <FaCreditCard className="mr-2" /> উত্তোলন
               </Button>
        </Link>
@@ -85,10 +85,10 @@ const Profile = () => {
         </div>
 
         {/* Profile */}
-        <div className="bg-gray-800 shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">প্রোফাইল</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outlined"  className="w-full border-border border-2 flex items-center justify-center">
+        <div className="bg-background-secondary shadow-md rounded-lg p-4">
+          
+          <div className="grid grid-cols-1 gap-4">
+            <Button variant="outlined"  className="w-full bg-background-section border-border border-2 flex items-center justify-center">
               <AiOutlineUser className="mr-2" /> ব্যাক্তিগত তথ্য
             </Button>
           <Link to='/reset'>
@@ -96,9 +96,7 @@ const Profile = () => {
                 <AiOutlineKey className="mr-2" /> পাসওয়ার্ড রিসেট করুন
               </Button>
           </Link>
-            <Button variant="outlined"  className="w-full flex items-center justify-between">
-              <MdOutlineInbox className="mr-2" /> ইনবক্স <span className="ml-2 bg-primary text-white text-xs px-2 py-1 rounded-full">2</span>
-            </Button>
+          
             <Button variant="outlined"  className="w-full border-border border-2 flex items-center justify-center">
               <BsPeopleFill className="mr-2" /> রেফারেল
             </Button>

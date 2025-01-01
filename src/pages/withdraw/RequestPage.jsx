@@ -1,20 +1,38 @@
 import { useForm } from "react-hook-form";
 import useAxiosSecure from "../../hooks/useAxiosSecure/useAxiosSecure";
 import useAuth from "../../hooks/useAuth/useAuth";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 
-import { Button, Card, CardBody, Input, Option, Select, Typography } from "@material-tailwind/react";
+import { Button, Card, CardBody, Input, Typography } from "@material-tailwind/react";
 import useAxios from './../../hooks/useAxios/useAxios';
+import { useState } from "react";
+import PropTypes from 'prop-types';
+import { BeatLoader } from "react-spinners";
+import Skeleton from "react-loading-skeleton";
 
 
-const RequestPage = () => {
+
+
+const RequestPage = ({refetch}) => {
+  const [isRequesting,setIsRequesting] = useState(false);
     const { register, handleSubmit, reset } = useForm();
-    const axiosSecure = useAxiosSecure();
     const axiosCommon = useAxios()
+    const axiosSecure = useAxiosSecure();
+ 
     const { user } = useAuth();
   
-    const { mutateAsync, isLoading: isRequesting } = useMutation({
+
+    const { data, isLoading } = useQuery({
+      queryKey: ["peyment"],
+      queryFn: async () => {
+        const { data } = await axiosSecure.get("/peyment");
+        return data;
+      },
+    });
+
+
+    const { mutateAsync } = useMutation({
       mutationFn: async (info) => {
         const { data } = await axiosCommon.post(`/withdraw`, info);
         return data;
@@ -22,9 +40,12 @@ const RequestPage = () => {
       onSuccess: () => {
         toast.success("Withdrawal request submitted successfully.");
         reset();
+        refetch()
+        setIsRequesting(false)
        
       },
       onError: () => {
+        setIsRequesting(false)
         toast.error("An error occurred while submitting your request.");
       },
     });
@@ -32,6 +53,7 @@ const RequestPage = () => {
   
   
     const onSubmit = (formData) => {
+      setIsRequesting(true);
       try {
         const requestData = {
           email: user?.email,
@@ -46,39 +68,51 @@ const RequestPage = () => {
   
     return (
         <div>
-             <Card className="mb-8 bg-gray-800 text-white">
+             <Card className="mb-8 bg-background-secondary text-text-primary">
         <CardBody className="p-6">
           <Typography variant="h6" className="mb-4 text-white">
             Submit a Withdrawal Request
           </Typography>
           <form className="grid gap-4" onSubmit={handleSubmit(onSubmit)}>
          
-
-            <Input
-              label="type"
-              className="bg-gray-700 text-gray-200"
-              {...register("type", { required: true })}
-            />
+  <label className="block text-sm font-medium mb-1">Type</label>
+            <select
+              className="w-full bg-background-secondary text-texxt-primary border border-gray-300 rounded-md px-3 py-2"
+              {...register("type", { required: "Payment type is required" })}
+            >
+              <option value="" selected disabled>
+                Select payment type
+              </option>
+              {isLoading ? (
+                <Skeleton count={1} height={36} />
+              ) : (
+                data?.withdrawType.map((info) => (
+                  <option key={info?._id} value={info.withdrawType}>
+                    {info.withdrawType}
+                  </option>
+                ))
+                
+              )}
+            </select>
             <Input
               label="Amount"
-              className="bg-gray-700 text-gray-200"
+                 color="white"
               {...register("amount", { required: true })}
             />
 
             <Input
               label="Number"
-              type="number"
-              className="bg-gray-700 text-gray-200"
+              color="white"
               {...register("number", { required: true })}
             />
 
             <Button
-              className="bg-blue-500 text-white hover:bg-blue-600"
+              className="bg-primary  "
               type="submit"
               fullWidth
               disabled={isRequesting}
             >
-              {isRequesting ? "Submitting..." : "Submit Request"}
+              {isRequesting ? <BeatLoader size={13} color="#ededed" />: "Submit Request"}
             </Button>
           </form>
         </CardBody>
@@ -86,5 +120,9 @@ const RequestPage = () => {
         </div>
     );
 };
+RequestPage.propTypes = {
+  refetch: PropTypes.func.isRequired,
+};
+
 
 export default RequestPage;

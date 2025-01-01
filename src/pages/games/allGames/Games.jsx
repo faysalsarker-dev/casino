@@ -20,10 +20,10 @@ const Games = () => {
     <div className="px-6 py-8">
       {/* Page Header */}
       <div className="mb-6 text-center">
-        <Typography variant="h4" className="font-bold text-blue-700">
+        <Typography variant="h4" className="font-bold ">
           All Games
         </Typography>
-        <Typography variant="subtitle1" className="text-gray-600">
+        <Typography variant="subtitle1" className="">
           Explore and discover your favorite games!
         </Typography>
       </div>
