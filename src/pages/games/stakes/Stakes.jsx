@@ -11,6 +11,7 @@ import gemSoundFile from "../../../audio/gem.m4a";
 import useSound from "use-sound";
 import Winning from "../../../components/winning/Winning";
 import { Button } from "@material-tailwind/react";
+import Loading from "../../../components/loading/Loading";
 
 
 const GAME_NAME = "mins";
@@ -28,7 +29,7 @@ const [gaming, setGaming] = useState(() => JSON.parse(localStorage.getItem(`${GA
   const [columns, setColumns] = useState(0);
 
   const [showWinningScreen, setShowWinningScreen] = useState(false); 
-  const { user, userInfo, setUserInfo } = useAuth();
+  const { user, userInfo, setUserInfo ,loading} = useAuth();
   const axiosSecure = useAxiosSecure();
   const [playBombSound] = useSound(bombSoundFile);
   const [playGemSound] = useSound(gemSoundFile);
@@ -170,6 +171,9 @@ const clearData =()=>{
   const clearGame = () => {
     setRevealed([])
   };
+
+
+  if(loading) return <Loading />;
 
   return (
     <div className="min-h-screen  text-text-primary">

@@ -10,11 +10,12 @@ import Winning from "../../../components/winning/Winning";
 import bombSoundFile from "../../../audio/bomb.m4a";
 import gemSoundFile from "../../../audio/gem.m4a";
 import useSound from "use-sound";
+import Loading from "../../../components/loading/Loading";
 const GAME_NAME = "dragon-tower";
 
 const DragonTower = () => {
   const axiosSecure = useAxiosSecure();
-  const { user, setUserInfo } = useAuth();
+  const { user, setUserInfo ,loading} = useAuth();
 
   const [currentLevel, setCurrentLevel] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_currentLevel`)) || 0
@@ -163,6 +164,9 @@ console.log(tower);
     localStorage.removeItem(`${GAME_NAME}_selectedPath`);
     localStorage.removeItem(`${GAME_NAME}_gaming`);
   };
+
+
+  if(loading) return <Loading />;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-background text-text-primary">

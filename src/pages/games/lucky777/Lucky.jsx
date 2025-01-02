@@ -8,6 +8,7 @@ import useAxiosSecure from '../../../hooks/useAxiosSecure/useAxiosSecure';
 import toast from 'react-hot-toast';
 import Winning from '../../../components/winning/Winning';
 import Reel from './Reel';
+import Loading from './../../../components/loading/Loading';
 
 
 const symbols = ['🍒', '🍋', '🍊','7'];
@@ -20,7 +21,7 @@ const Lucky777 = () => {
   const symbolHeight = 112; 
   const [reels, setReels] = useState(['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(false);
-  const {userInfo, setUserInfo,user} = useAuth();
+  const {setUserInfo,user,loading} = useAuth();
   const [betAmount, setBetAmount] = useState(10);
   const [message, setMessage] = useState('');
   const [gaming, setGaming] = useState(false);
@@ -87,7 +88,7 @@ console.log(newReels);
     setTimeout(() => {
       setSpinning(false);
       checkWin(newReels);
-    }, 3000); // Shorter spin duration
+    }, 3000); 
   };
 
   const checkWin = async(newReels) => {
@@ -108,6 +109,7 @@ console.log(newReels);
   };
 
 
+  if(loading) return <Loading />;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary">
