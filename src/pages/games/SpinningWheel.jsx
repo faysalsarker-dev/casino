@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { Button } from '@material-tailwind/react';
 import Winning from '../../components/winning/Winning';
-import { SyncLoader } from 'react-spinners';
+
 import Loading from '../../components/loading/Loading';
 
 

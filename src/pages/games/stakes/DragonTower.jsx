@@ -173,7 +173,7 @@ console.log(tower);
       {showWinningScreen && <Winning amount={betAmount * 10} />}
     
 
-      <div className="grid grid-cols-1 gap-4 w-full mt-6 h-2/3">
+      <div className="mt-24  grid grid-cols-1 gap-4 w-full  h-2/3">
         {tower.map((level, levelIndex) => (
           <motion.div
             key={levelIndex}

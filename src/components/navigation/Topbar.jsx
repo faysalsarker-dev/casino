@@ -16,7 +16,7 @@ const Topbar = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-black/60 to-gray-900/60 backdrop-blur-md px-4 py-3 flex justify-between items-center shadow-xl rounded-lg">
+    <div className="fixed top-0 w-full z-50 left-0 bg-background-section px-4 py-3 flex justify-between items-center shadow-xl rounded-lg">
       {/* Logo Section */}
       <div className="text-3xl font-extrabold flex items-center text-white">
     BDxBet

@@ -176,10 +176,10 @@ const clearData =()=>{
   if(loading) return <Loading />;
 
   return (
-    <div className="min-h-screen  text-text-primary">
+    <div className="min-h-screen bg-background text-text-primary">
       {showWinningScreen && <Winning amount={betAmount * 10} />}
-      <div className="flex flex-col items-center gap-6 p-2">
-     <div className="w-full h-2/3 bg-background-section p-2 rounded-lg">
+      <div className="flex  flex-col items-center gap-6 p-2">
+     <div className="w-full h-2/3 mt-24 bg-background-section p-2 rounded-lg">
         
           <div
             className={`grid gap-2  `}
