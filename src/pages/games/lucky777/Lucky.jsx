@@ -1,84 +1,34 @@
-import React, { useState, useRef } from 'react';
+import  { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-import { Input, Typography } from '@material-tailwind/react';
+import { Button,  Typography } from '@material-tailwind/react';
 import useAuth from '../../../hooks/useAuth/useAuth';
 import { useMutation } from '@tanstack/react-query';
 import useAxiosSecure from '../../../hooks/useAxiosSecure/useAxiosSecure';
 import toast from 'react-hot-toast';
+import Winning from '../../../components/winning/Winning';
+import Reel from './Reel';
 
-// Array of symbols for the slot machine
-const symbols = ['🍒', '🍋', '🍊'];
 
-// Helper function to get a random symbol
+const symbols = ['🍒', '🍋', '🍊','7'];
+
 const getRandomSymbol = () => symbols[Math.floor(Math.random() * symbols.length)];
 
-// Reel component to display individual reels with animations
-const Reel = ({ isSpinning, finalSymbol, symbolHeight }) => {
-  const finalPosition = symbols.indexOf(finalSymbol);
-
-  const spinVariants = {
-    spinning: {
-      y: [0, -symbolHeight * symbols.length],
-      transition: {
-        y: {
-          repeat: Infinity,
-          duration: 0.2, // Faster spin duration
-          ease: 'linear',
-        },
-      },
-    },
-    stopped: {
-      y: -finalPosition * symbolHeight,
-      transition: {
-        duration: 0.3,
-        ease: 'easeOut',
-      },
-    },
-  };
-
-  return (
-    <div
-      className="overflow-hidden h-28 w-28 border-4 rounded-lg shadow-lg neon-border"
-      style={{
-        height: `${symbolHeight}px`,
-        backgroundColor: '#1a1a2e',
-        boxShadow: '0 0 20px #e0aaff, inset 0 0 10px #e0aaff',
-        border: '2px solid #e0aaff',
-      }}
-    >
-      <motion.div
-        className="flex flex-col"
-        variants={spinVariants}
-        animate={isSpinning ? 'spinning' : 'stopped'}
-      >
-        {symbols.map((symbol, index) => (
-          <div
-            key={index}
-            className="h-28 flex items-center justify-center text-4xl font-extrabold text-yellow-400"
-            style={{ height: `${symbolHeight}px` }}
-          >
-            {symbol}
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
-
+const GAME_NAME = "luck777";
 // Main Lucky777 component
 const Lucky777 = () => {
-  const symbolHeight = 112; // Dynamically adjust symbol height here
+  const symbolHeight = 112; 
   const [reels, setReels] = useState(['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(false);
   const {userInfo, setUserInfo,user} = useAuth();
   const [betAmount, setBetAmount] = useState(10);
   const [message, setMessage] = useState('');
-  const spinSound = useRef(new Audio('/spin.mp3')); // Add spin sound file
+  const [gaming, setGaming] = useState(false);
+  const spinSound = useRef(new Audio('/spin.mp3')); 
   const winSound = useRef(new Audio('/win.mp3'));
   const axiosSecure = useAxiosSecure()
-  
-  
+  const [showWinningScreen, setShowWinningScreen] = useState(false); 
+
   const { mutateAsync: gameStart } = useMutation({
     mutationFn: async (info) => {
       const { data } = await axiosSecure.post(`/game/games-start`, info);
@@ -99,6 +49,9 @@ const Lucky777 = () => {
       const { data } = await axiosSecure.post(`/game/games-lost`, info);
       return data;
     },
+    onSuccess:()=>{
+      setGaming(false);
+    }
   });
   const { mutateAsync: gameWin } = useMutation({
     mutationFn: async (info) => {
@@ -106,12 +59,18 @@ const Lucky777 = () => {
       return data;
     },
     onSuccess: (data) => {
-      
-      setUserInfo(data.user);
+      setShowWinningScreen(false)
+      setGaming(false);
+      setUserInfo(data);
+    },
+    onError: () => {
+      setShowWinningScreen(false)
+      setGaming(false);
     }
   });
 
   const spinReels = () => {
+    setGaming(true);
     const gameInfo ={
       userEmail: user?.email,
       betAmount: betAmount,
@@ -124,24 +83,26 @@ const Lucky777 = () => {
 
     const newReels = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
     setReels(newReels);
-
+console.log(newReels);
     setTimeout(() => {
       setSpinning(false);
       checkWin(newReels);
-    }, 2000); // Shorter spin duration
+    }, 3000); // Shorter spin duration
   };
 
   const checkWin = async(newReels) => {
-    if (newReels.every((symbol) => symbol === '7️⃣')) {
-      await gameWin({ userEmail: user?.email ,betAmount ,winAmount:400,status:"win" ,gameName:"Lucky777"});
+    if (newReels.every((symbol) => symbol === '7')) {
+      await gameWin({ userEmail: user?.email ,betAmount ,winAmount:400,status:"win" ,gameName:GAME_NAME});
       setMessage('Jackpot! You won 100!');
       winSound.current.play();
+      setShowWinningScreen(true);
     } else if (newReels[0] === newReels[1] && newReels[1] === newReels[2]) {
-      await gameWin({ userEmail: user?.email ,betAmount,winAmount:100 ,status:"win" ,gameName:"Lucky777"});
+      await gameWin({ userEmail: user?.email ,betAmount,winAmount:100 ,status:"win" ,gameName:GAME_NAME});
       setMessage('You won 50!');
       winSound.current.play();
+      setShowWinningScreen(true);
     } else {
-      await gameLost({ userEmail: user?.email, betAmount ,status:"lost" ,gameName:"Lucky777"});
+      await gameLost({ userEmail: user?.email, betAmount ,status:"lost" ,gameName:GAME_NAME});
       setMessage('Try again!');
     }
   };
@@ -149,7 +110,8 @@ const Lucky777 = () => {
 
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 via-black to-gray-900 text-white">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary">
+        {showWinningScreen && <Winning amount={betAmount * 10} />}
       <div className="w-full">
         <div className="bg-gradient-to-r from-purple-700 to-purple-500 w-full text-center py-4 shadow-md">
           <Typography variant="h2" className="text-3xl font-bold text-white">
@@ -158,38 +120,14 @@ const Lucky777 = () => {
         </div>
       </div>
 
-      <div className="flex space-x-4 mb-8 mt-12">
+      <div className="flex space-x-4 mb-8 mt-12 bg-background-secondary px-0">
         {reels.map((symbol, index) => (
-          <Reel key={index} isSpinning={spinning} finalSymbol={symbol} symbolHeight={symbolHeight} />
+          <Reel  key={index} symbols={symbols} isSpinning={spinning} finalSymbol={symbol} symbolHeight={symbolHeight} />
         ))}
       </div>
-      <div className='w-full bg-primary text-center p-4'>
-<Typography variant='h4'>        Try your luck! Bet 10 and win 50</Typography>
-      </div>
-      <div className="flex space-x-6 mb-6 mt-2 w-full ">
-        <div>
-        <Input
-        placeholder="enter your bet amount"
-       type='number'
-        className="text-white appearance-none !border-t-white placeholder:text-white placeholder:opacity-100 focus:!border-t-gray-900 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        labelProps={{
-          className: "before:content-none after:content-none",
-        }}
-      />
-        </div>
-        <button
-          onClick={spinReels}
-          className={`px-8 py-3 bg-red-500 hover:bg-red-700 text-white font-bold rounded-lg shadow-lg transform hover:scale-105 transition-transform ${
-            spinning  ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={spinning }
-        >
-          Spin
-        </button>
-      
-      </div>
-     
-      {message && (
+      <div className="bg-gradient-to-r from-purple-700 to-purple-500 w-full text-center py-4 shadow-md">
+          <Typography variant="h2" className="text-3xl font-bold text-white">
+             {message ? (
         <motion.div
           className="text-3xl text-yellow-400 font-bold"
           initial={{ scale: 0.8 }}
@@ -197,7 +135,43 @@ const Lucky777 = () => {
         >
           {message}
         </motion.div>
-      )}
+      ):'Try your luck!'}
+          </Typography>
+        </div>
+      <div className="p-4 h-1/3 mb-10 bg-background-section rounded-lg shadow-lg w-full  space-y-6">
+          {/* Bet Amount Field */}
+          <div className="flex justify-between items-center gap-4">
+      <div className="w-full">
+        <label className="block text-sm font-medium mb-1">Bet Amount (10 min)</label>
+        <input
+          type="number"
+          value={betAmount}
+          // disabled={gaming}
+          onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
+          className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
+          min="10"
+        />
+      </div>
+    
+     
+    </div>
+    
+         
+          
+    
+          {/* Start Game Button */}
+          <Button
+            disabled={gaming}
+            onClick={spinReels}
+            
+            className='bg-primary w-full'
+            size="lg"
+          >
+            {gaming ? "Game In Progress" : "Start Game"}
+          </Button>
+        </div>
+     
+     
     </div>
   );
 };
