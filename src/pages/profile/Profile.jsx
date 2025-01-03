@@ -36,7 +36,7 @@ const Profile = () => {
   return (
     <div className=" p-4 bg-background text-text-primary">
       {/* Header Section */}
-      <div className="bg-background-section p-4 rounded-lg mb-6">
+      <div className="bg-background-section p-4 rounded-lg mb-6 mt-20">
         <div className="flex items-center space-x-4">
           <img className="w-16 h-16 rounded-full" src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://fdczvxmwwjwpwbeeqcth.supabase.co/storage/v1/object/public/images/17a628eb-7f4e-44d7-808a-0851ac0a53f2/a87b5d6b-54a0-440e-a540-6e75fecdbe18.png" alt="" />
           
@@ -104,7 +104,7 @@ const Profile = () => {
         </div>
 
         {/* Logout Button */}
-        <div className="text-center">
+        <div className="text-center mb-5">
           <Button onClick={OnLogout} variant="filled" color="red" className="w-full flex items-center justify-center">
             <FiLogOut className="mr-2" /> লগ আউট
           </Button>

@@ -46,7 +46,7 @@ console.log(info);
    
     return (
       <Tabs value='request' className="min-h-screen p-4 bg-background text-text-primary" id="custom-animation" >
-        <TabsHeader>
+        <TabsHeader className="mt-20">
           {data.map(({ label, value }) => (
             <Tab key={value} value={value}>
               {label}
@@ -61,7 +61,7 @@ console.log(info);
           }}
         >
           {data.map(({ value, desc }) => (
-            <TabPanel  key={value} value={value}>
+            <TabPanel className="p-0"  key={value} value={value}>
               {desc}
             </TabPanel>
           ))}

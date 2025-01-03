@@ -47,7 +47,7 @@ import useAuth from "../../hooks/useAuth/useAuth";
    
     return (
       <Tabs value='request' className="min-h-screen p-4 bg-background text-text-primary" id="custom-animation" >
-        <TabsHeader >
+        <TabsHeader  className="mt-20">
           {data.map(({ label, value }) => (
             <Tab  key={value} value={value}>
               {label}

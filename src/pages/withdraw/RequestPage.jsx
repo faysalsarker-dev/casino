@@ -68,8 +68,8 @@ const RequestPage = ({refetch}) => {
   
     return (
         <div>
-             <Card className="mb-8 bg-background-secondary text-text-primary">
-        <CardBody className="p-6">
+             <Card className="mb-8 mt-5 bg-background-secondary text-text-primary">
+        <CardBody className="p-3">
           <Typography variant="h6" className="mb-4 text-white">
             Submit a Withdrawal Request
           </Typography>

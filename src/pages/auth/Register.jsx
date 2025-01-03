@@ -73,14 +73,14 @@ const Register = () => {
   
   
   return (
-    <div className="min-h-screen relative bg-gray-900 text-white flex items-center justify-center">
+    <div className="min-h-screen p-3 relative bg-background text-text-primary flex items-center justify-center">
       <button
         onClick={() => navigate("/")}
-        className="absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl"
+        className="absolute top-2 left-4 btn p-4 rounded-lg bg-background-secondary shadow-xl"
       >
         <FaArrowLeft />
       </button>
-      <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+      <div className="bg-background-section rounded-lg p-3 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">সাইন আপ</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Username */}
@@ -100,7 +100,7 @@ const Register = () => {
               })}
               type="text"
               placeholder="৪-১৫ অক্ষর লিখুন"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-400"
               aria-label="ব্যবহারকারীর নাম"
             />
             {errors.name && (
@@ -121,7 +121,7 @@ const Register = () => {
               })}
               type="tel"
               placeholder="আপনার ফোন নাম্বার লিখুন"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-400"
               aria-label="ফোন নাম্বার"
             />
             {errors.phone && (
@@ -144,7 +144,7 @@ const Register = () => {
               })}
               type="email"
               placeholder="ই-মেইল"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-400"
               aria-label="ই-মেইল"
             />
             {errors.email && (
@@ -168,7 +168,7 @@ const Register = () => {
                 })}
                 type={showPassword ? "text" : "password"}
                 placeholder="৬-২০ অক্ষর লিখুন"
-                className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+                className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-400"
                 aria-label="পাসওয়ার্ড"
               />
               <button
@@ -197,9 +197,10 @@ const Register = () => {
                   message: "রেফার কোড সর্বাধিক ১০ অক্ষরের হতে পারে।",
                 },
               })}
+              color="white"
               type="text"
               placeholder="রেফার কোড লিখুন (ঐচ্ছিক)"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-400"
+              className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-400"
               aria-label="রেফার কোড"
             />
             {errors.referral && (
@@ -232,11 +233,11 @@ const Register = () => {
           <Button
             disabled={loading}
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex justify-center items-center"
+            className="w-full mb-5 bg-primary hover:bg-green-700 text-white  flex justify-center items-center"
           >
             {loading ? (
               <div>
-                {" "}
+              
                 <PulseLoader size={8} color="#ffffff" />
               </div>
             ) : (

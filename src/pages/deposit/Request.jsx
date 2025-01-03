@@ -69,7 +69,7 @@ const Request = ({ refetch }) => {
   };
 
   return (
-    <div className="w-full mx-auto mt-10 text-text-primary">
+    <div className="w-full mx-auto mt-5 text-text-primary">
       {/* Account Details Section */}
       <Card className="mb-8 bg-background-section text-text-primary">
         <div className="grid gap-4 px-3 py-4">

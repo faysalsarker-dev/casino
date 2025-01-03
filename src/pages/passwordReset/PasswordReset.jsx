@@ -10,6 +10,7 @@ import {
 } from "@material-tailwind/react";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth/useAuth";
+import { Link } from "react-router-dom";
 
 const PasswordReset = () => {
   const {
@@ -34,8 +35,8 @@ const PasswordReset = () => {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-900 px-4">
-      <div className="w-full max-w-lg -mt-20">
+    <div className="flex items-center justify-center h-screen bg-background px-4 text-text-primary">
+      <div className="w-full max-w-lg  text-text-primary">
         <Typography
           variant="h4"
           className="text-center font-bold text-primary mb-8"
@@ -43,11 +44,11 @@ const PasswordReset = () => {
           Reset Your Password
         </Typography>
 
-        <Card className="bg-gray-800 shadow-lg">
+        <Card className="bg-background-section text-text-primary shadow-lg">
           <CardBody className="p-6 space-y-6">
             <Typography
               variant="paragraph"
-              className="text-gray-300 text-center mb-4"
+              className=" text-center mb-4"
             >
               Enter your registered email address, and we&apos;ll send you a link to
               reset your password.
@@ -58,6 +59,7 @@ const PasswordReset = () => {
                 <Input
                   label="Email Address"
                   type="email"
+                  color="white"
                   {...register("email", {
                     required: "Email is required",
                     pattern: {
@@ -67,7 +69,7 @@ const PasswordReset = () => {
                     },
                   })}
                   error={!!errors.email}
-                  className="bg-gray-700 text-gray-200 border-primary"
+                  className="bg-background-secondary  border-primary text-text-primary"
                 />
                 {errors.email && (
                   <Typography
@@ -97,9 +99,9 @@ const PasswordReset = () => {
             className="text-gray-400"
           >
             Remember your password?{" "}
-            <a href="/login" className="text-primary font-medium hover:underline">
+            <Link to="/login" className="text-primary font-medium hover:underline">
               Login
-            </a>
+            </Link>
           </Typography>
         </div>
       </div>

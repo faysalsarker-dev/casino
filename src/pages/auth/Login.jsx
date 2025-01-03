@@ -3,11 +3,12 @@ import { useForm } from "react-hook-form";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuth from "../../hooks/useAuth/useAuth";
+import { PulseLoader } from "react-spinners";
 
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signIn, user } = useAuth();
+  const { signIn, user,loading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -33,12 +34,12 @@ const Login = () => {
   }, [user, location.state, navigate]);
 
   return (
-    <div className="min-h-screen relative bg-gray-900 text-white flex items-center justify-center">
+    <div className="min-h-screen p-3 relative bg-background text-text-primary flex items-center justify-center">
                      <button onClick={()=>navigate('/')} className='absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl'>
                  <FaArrowLeft />
 
       </button>
-      <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+      <div className="bg-background-section rounded-lg p-3 max-w-md w-full">
         <h1 className="text-2xl font-bold mb-6 text-center">লগইন</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* Email */}
@@ -56,8 +57,9 @@ const Login = () => {
                 },
               })}
               type="email"
+              color="white"
               placeholder="ই-মেইল লিখুন"
-              className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-500"
+              className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-500"
               aria-invalid={errors.email ? "true" : "false"}
             />
             {errors.email && (
@@ -82,9 +84,10 @@ const Login = () => {
                     message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে",
                   },
                 })}
+                color="white"
                 type={showPassword ? "text" : "password"}
                 placeholder="পাসওয়ার্ড লিখুন"
-                className="w-full px-4 py-2 border rounded-md bg-gray-700 text-gray-300 focus:outline-none focus:ring focus:ring-blue-500"
+                className="w-full px-4 py-2 border rounded-md bg-background-secondary text-text-primary focus:outline-none focus:ring focus:ring-blue-500"
                 aria-invalid={errors.password ? "true" : "false"}
               />
               <button
@@ -106,9 +109,19 @@ const Login = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            className="w-full bg-primary text-white px-4 py-2 rounded-md"
           >
-            লগইন
+ {loading ? (
+              <div>
+              
+                <PulseLoader size={8} color="#ffffff" />
+              </div>
+            ) : (
+              "লগইন"
+            )}
+
+
+           
           </button>
         </form>
       </div>

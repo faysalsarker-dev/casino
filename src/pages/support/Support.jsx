@@ -37,7 +37,7 @@ const Support = () => {
   return (
     <div className="bg-background p-6 text-text-primary">
       {/* Header Section */}
-      <div className="bg-background-section p-4 rounded-lg mb-6">
+      <div className="bg-background-section mt-20 p-4 rounded-lg mb-6">
         <h1 className="text-2xl font-bold">Support Center</h1>
         <p className="text-sm opacity-80">Connect with us through your preferred platform</p>
       </div>

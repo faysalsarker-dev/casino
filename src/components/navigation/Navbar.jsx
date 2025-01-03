@@ -43,8 +43,8 @@ const Navbar = () => {
             className={({ isActive }) =>
               `flex flex-col items-center justify-center text-sm font-medium transition-colors duration-200 ${
                 isActive
-                  ? "text-secondary relative"
-                  : "text-gray-500 hover:text-blue-400"
+                  ? "text-text-primary relative"
+                  : "text-gray-500 hover:text-primary"
               }`
             }
           >
