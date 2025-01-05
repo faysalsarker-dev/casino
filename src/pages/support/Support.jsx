@@ -70,7 +70,7 @@ const Support = () => {
                   support?.name || ''
                 )}`}
               >
-                <img className='w-8' src={support?.icon} alt="" />
+                <img className='w-8' src={`${import.meta.env.VITE_BACKEND_BASE_URL}/images/${support.image}`} alt={support?.name || "support"} />
                 <span className="flex items-center gap-2">
                 
                   <span className="capitalize">{support?.name || 'Unknown'}</span>

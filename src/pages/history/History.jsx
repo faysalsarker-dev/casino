@@ -1,4 +1,4 @@
-import { Typography } from "@material-tailwind/react";
+
 import { useQuery } from "@tanstack/react-query";
 import { FaTrophy, FaRegSadTear } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
@@ -20,7 +20,7 @@ const History = () => {
   return (
     <div className="p-4 bg-background text-text-primary">
       {/* Header */}
-      <div className="bg-background-section p-4 rounded-lg mb-6">
+      <div className="bg-background-section mt-20 p-4 rounded-lg mb-6">
         <h1 className="text-2xl font-bold">Game History</h1>
         <p className="text-sm opacity-80">Your recent game results</p>
       </div>

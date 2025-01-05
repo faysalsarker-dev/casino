@@ -115,7 +115,7 @@ const Request = ({ refetch }) => {
       </Card>
 
       {/* Input Form */}
-      <Card className="mb-8 bg-background-secondary text-white">
+      <Card className="mb-12 bg-background-secondary text-white">
         <CardBody className="p-3">
           <Typography variant="h6" className="mb-4 text-white">
             Submit a Deposit Request
@@ -133,7 +133,7 @@ const Request = ({ refetch }) => {
               {isLoading ? (
                 <Skeleton count={1} height={36} />
               ) : (
-                data?.depositAddresses.map((info) => (
+                data?.depositAddresses?.map((info) => (
                   <option key={info?._id} value={info.paymentType}>
                     {info.paymentType}
                   </option>
@@ -176,7 +176,7 @@ const Request = ({ refetch }) => {
 
             {/* Submit Button */}
             <Button
-              className="bg-primary text-text-primary"
+              className="bg-primary text-text-primary mb-5"
               type="submit"
               fullWidth
               disabled={isRequesting}

@@ -3,7 +3,7 @@ import GameSec from "./game Sec/GameSec";
 
 const Home = () => {
     return (
-        <div>
+        <div className="bg-background min-h-screen">
          <Sliders/>
          <GameSec/>
         </div>

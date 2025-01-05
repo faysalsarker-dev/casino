@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Button, Typography } from '@material-tailwind/react';
 import useAuth from '../../../hooks/useAuth/useAuth';
@@ -8,7 +8,8 @@ import toast from 'react-hot-toast';
 import Winning from '../../../components/winning/Winning';
 import Reel from './Reel';
 import Loading from './../../../components/loading/Loading';
-
+import useSound from 'use-sound';
+import spinSound from "../../../audio/spin.mp3";
 const symbols = ['🍒', '🍋', '🍊', '7'];
 const GAME_NAME = 'luck777';
 const symbolHeight = 112;
@@ -17,10 +18,10 @@ const getRandomSymbol = () => symbols[Math.floor(Math.random() * symbols.length)
 
 const Lucky777 = () => {
   const { setUserInfo, user, loading } = useAuth();
-  const spinSound = useRef(new Audio('/spin.mp3'));
-  const winSound = useRef(new Audio('/win.mp3'));
+  
+  
   const axiosSecure = useAxiosSecure();
-
+  const [playSpinSound] = useSound(spinSound);
   const [reels, setReels] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_reels`)) || ['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_spinning`)) || false);
   const [betAmount, setBetAmount] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10);
@@ -87,8 +88,8 @@ const Lucky777 = () => {
 
     setSpinning(true);
     setMessage('');
-    resetAudio(spinSound.current);
-    spinSound.current.play();
+    // resetAudio(spinSound.current);
+    playSpinSound()
 
     const newReels = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
     setReels(newReels);
@@ -129,17 +130,13 @@ const Lucky777 = () => {
     }
   };
 
-  const resetAudio = (audio) => {
-    audio.pause();
-    audio.currentTime = 0;
-  };
 
-  const postWinActions = (messageText, amount) => {
+
+  const postWinActions = (messageText) => {
     clearData();
     setGaming(false);
     setMessage(messageText);
-    resetAudio(winSound.current);
-    winSound.current.play();
+    
     setShowWinningScreen(true);
   };
 
@@ -161,9 +158,9 @@ const Lucky777 = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary">
+    <div className="max-w-5xl mx-auto  flex flex-col items-center justify-center min-h-screen bg-background text-text-primary">
       {showWinningScreen && <Winning amount={betAmount * 10} />}
-      <div className="w-full">
+      <div className="w-full mt-20">
         <div className="bg-gradient-to-r from-purple-700 to-purple-500 w-full text-center py-4 shadow-md">
           <Typography variant="h2" className="text-3xl font-bold text-white">
             Lucky 777
@@ -206,9 +203,9 @@ const Lucky777 = () => {
             <input
               type="number"
               value={betAmount}
-              onChange={(e) => setBetAmount(Math.max(parseInt(e.target.value) || 0, 10))}
+              onChange={(e) => setBetAmount(Math.max(parseInt(e.target.value) ))}
               className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
-              min="10"
+              
             />
           </div>
         </div>

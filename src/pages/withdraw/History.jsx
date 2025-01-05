@@ -53,7 +53,7 @@ const History = ({ info, isError, isLoading }) => {
                   </td>
                 </tr>
               ) : Array.isArray(info) && info.length > 0 ? (
-                info.map(({ type, amount, number, status }, index) => {
+                info?.map(({ type, amount, number, status }, index) => {
                   const isLast = index === info.length - 1;
                   const rowClass = isLast ? "" : "border-b border-gray-700";
 

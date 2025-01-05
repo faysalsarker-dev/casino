@@ -51,7 +51,7 @@ const Table = ({ isLoading, isError, data }) => {
                   </td>
                 </tr>
               ) : Array.isArray(data) && data.length > 0 ? (
-                data.map(({ paymentType, transactionCode, number, status }, index) => {
+                data?.map(({ paymentType, transactionCode, number, status }, index) => {
                   const isLast = index === data.length - 1;
                   const rowClass = isLast ? "" : "border-b border-gray-700";
 

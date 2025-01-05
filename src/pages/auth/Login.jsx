@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import useAuth from "../../hooks/useAuth/useAuth";
 import { PulseLoader } from "react-spinners";
 
@@ -35,7 +35,7 @@ const Login = () => {
 
   return (
     <div className="min-h-screen p-3 relative bg-background text-text-primary flex items-center justify-center">
-                     <button onClick={()=>navigate('/')} className='absolute top-2 left-4 btn p-4 rounded-lg bg-gray-800 shadow-xl'>
+                     <button onClick={()=>navigate('/')} className='absolute top-2 left-4 btn p-4 rounded-lg bg-background-secondary shadow-xl'>
                  <FaArrowLeft />
 
       </button>
@@ -105,7 +105,12 @@ const Login = () => {
               </p>
             )}
           </div>
-
+            {/* Forgot Password Link */}
+            <div className="text-right">
+            <Link to="/reset" className="text-primary hover:underline">
+              পাসওয়ার্ড ভুলে গেছেন?
+            </Link>
+            </div>
           {/* Submit Button */}
           <button
             type="submit"
@@ -124,6 +129,12 @@ const Login = () => {
            
           </button>
         </form>
+        <p className="text-center text-sm mt-4">
+          আপনার কোনো অ্যাকাউন্ট নেই ?{" "}
+          <Link to="/register" className="text-primary hover:underline">
+            রেজিস্টার করুন
+          </Link>
+        </p>
       </div>
     </div>
   );

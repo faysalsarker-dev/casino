@@ -26,7 +26,7 @@ import { useQuery } from "@tanstack/react-query";
           return data;
         },
       });
-console.log(info);
+
     const data = [
       {
         label: "Make Request",

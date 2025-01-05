@@ -20,7 +20,7 @@ const RequestPage = ({refetch}) => {
     const axiosCommon = useAxios()
     const axiosSecure = useAxiosSecure();
  
-    const { user } = useAuth();
+    const { user ,userInfo} = useAuth();
   
 
     const { data, isLoading } = useQuery({
@@ -53,6 +53,11 @@ const RequestPage = ({refetch}) => {
   
   
     const onSubmit = (formData) => {
+      if(userInfo.winBalance < formData.amount){
+        toast.error("Insufficient balance")
+        reset();
+        return
+      }
       setIsRequesting(true);
       try {
         const requestData = {

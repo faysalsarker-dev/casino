@@ -1,37 +1,35 @@
-import { Typography, Card, CardBody, CardFooter, Button } from "@material-tailwind/react";
-import { Link } from "react-router-dom";
+import { Typography } from "@material-tailwind/react";
+
 import img1 from "../../../images/img1.jpeg";
 import img2 from "../../../images/img2.jpeg";
 import img3 from "../../../images/img3.jpeg";
 import img4 from "../../../images/img4.jpeg";
-import img5 from "../../../images/img5.jpeg";
-import GameCard from "../../../components/cards/GameCard";
+
+import GamelistCard from "../../../components/cards/Gamelist/GamelistCard";
 
 const games = [
-  { image: img1, path: "/", title: "Game 1", description: "Exciting adventure game." },
-  { image: img2, path: "/", title: "Game 2", description: "Fast-paced action game." },
-  { image: img3, path: "/spinnig", title: "Game 3", description: "Solve puzzles and challenges." },
-  { image: img4, path: "/", title: "Game 4", description: "Explore new worlds." },
-  { image: img5, path: "/", title: "Game 5", description: "Test your strategy skills." },
+  { image: img1, name: "Lucky777", path: "/games/lucky", title: "Game 1", description: "Try your luck and hit the jackpot!" },
+  { image: img2, name: "Mins", path: "/games/mins", title: "Game 2", description: "Mine gems to grow your wealth." },
+  { image: img3, name: "Spinning Wheel", path: "games/spinning", title: "Game 3", description: "Spin the wheel and win rewards." },
+  { image: img4, name: "Dragon Tower", path: "/games/dragon-tower", title: "Game 4", description: "Climb the tower by guessing right." },
 ];
+
+
 
 const Games = () => {
   return (
     <div className="px-6 py-8">
-      {/* Page Header */}
-      <div className="mb-6 text-center">
-        <Typography variant="h4" className="font-bold ">
-          All Games
-        </Typography>
-        <Typography variant="subtitle1" className="">
-          Explore and discover your favorite games!
-        </Typography>
+   
+      <div className="mb-6 text-center mt-20">
+      <Typography variant="h2" className="mb-4 text-text-primary text-start pl-2 border-l-4 border-l-text-text-primary ">
+       All Games
+      </Typography>
       </div>
 
-      {/* Games Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      
+      <div className="grid grid-cols-1  md:grid-cols-2  gap-3">
       {games.map((game, idx) => (
-          <GameCard key={idx} game={game} />
+          <GamelistCard key={idx} data={game} />
         ))}
       </div>
     </div>

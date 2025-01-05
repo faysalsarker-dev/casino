@@ -11,11 +11,12 @@ import bombSoundFile from "../../../audio/bomb.m4a";
 import gemSoundFile from "../../../audio/gem.m4a";
 import useSound from "use-sound";
 import Loading from "../../../components/loading/Loading";
+import toast from "react-hot-toast";
 const GAME_NAME = "dragon-tower";
 
 const DragonTower = () => {
   const axiosSecure = useAxiosSecure();
-  const { user, setUserInfo ,loading} = useAuth();
+  const { user, setUserInfo ,loading ,userInfo} = useAuth();
 
   const [currentLevel, setCurrentLevel] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_currentLevel`)) || 0
@@ -128,6 +129,7 @@ console.log(tower);
         gameName: GAME_NAME,
       });
       revealAllBombs();
+      clearGameData()
     }
   };
 
@@ -144,7 +146,11 @@ console.log(tower);
 
   const handleGameStart = () => {
     if (betAmount < 10) {
-      alert("Minimum bet amount is 10.");
+      toast.error("Minimum bet amount is 10.");
+      return;
+    }
+    if (userInfo?.depositBalace < 10) {
+      toast.error("Minimum bet amount is 10.");
       return;
     }
     resetGame();
@@ -169,17 +175,18 @@ console.log(tower);
   if(loading) return <Loading />;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-background text-text-primary">
+    <div className="flex flex-col lg:flex-row-reverse items-center min-h-screen bg-background text-text-primary p-3">
       {showWinningScreen && <Winning amount={betAmount * 10} />}
     
 
-      <div className="mt-24  grid grid-cols-1 gap-4 w-full  h-2/3">
-        {tower.map((level, levelIndex) => (
+      <div className="mt-24 p-2 rounded-lg grid grid-cols-1 gap-4 w-full h-2/3 bg-background-section">
+        {tower
+        .map((level, levelIndex) => ({ level, levelIndex }))
+        .reverse()
+        .map(({ level, levelIndex }) => (
           <motion.div
             key={levelIndex}
-            className={`flex justify-center  gap-4 ${
-              levelIndex === currentLevel ? "ring-4 ring-secondary p-2" : ""
-            }`}
+            className={`flex justify-center  gap-4`}
           >
             {level.map((tile, tileIndex) => {
               const isSelected = selectedPath.some(
@@ -198,30 +205,39 @@ console.log(tower);
                         ? "bg-background-secondary"
                         : "bg-red-500"
                       : levelIndex === currentLevel
-                      ? "bg-gray-700 hover:bg-gray-600"
-                      : "bg-gray-800"
+                      ? gaming ? "bg-primary text-white" :"bg-[#557086]"
+                      : "bg-[#557086]"
                   }`}
                   whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={() => levelIndex === currentLevel && handleTileClick(tileIndex)}
                 >
-                  {isSelected &&
+                  {levelIndex === currentLevel && !isSelected ? (
+                  gaming && (<motion.span
+                      className="text-2xl"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      ?
+                    </motion.span>)
+                  ) : isSelected &&
                     (result?.isSafe ? (
-                           <motion.img
-                                          src={egg}
-                                          alt="gem"
-                                          initial={{ opacity: 0, scale: 0.5 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          transition={{ duration: 0.9 }}
-                                        />
+                      <motion.img
+                        src={egg}
+                        alt="gem"
+                        initial={{ opacity: 0, scale: 0.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.9 }}
+                      />
                     ) : (
-                         <motion.img
-                                          src={bomb}
-                                          alt="bomb"
-                                          initial={{ scale: 0, rotate: 180 }}
-                                          animate={{ scale: 1, rotate: 0 }}
-                                          transition={{ duration: 0.9 }}
-                                        />
+                      <motion.img
+                        src={bomb}
+                        alt="bomb"
+                        initial={{ scale: 0, rotate: 180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.9 }}
+                      />
                     ))}
                 </motion.button>
               );
@@ -238,7 +254,7 @@ console.log(tower);
       type="number"
       value={betAmount}
       disabled={gaming}
-      onChange={(e) => setBetAmount(parseInt(e.target.value) || 0)}
+      onChange={(e) => setBetAmount(parseInt(e.target.value))}
       className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
       min="10"
     />

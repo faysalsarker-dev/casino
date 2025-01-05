@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { FaArrowLeft, FaEye, FaEyeSlash } from "react-icons/fa";
 import useAuth from "../../hooks/useAuth/useAuth";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import useAxios from "../../hooks/useAxios/useAxios";
 import PulseLoader from "react-spinners/PulseLoader";
@@ -193,8 +193,8 @@ const Register = () => {
             <input
               {...register("referral", {
                 maxLength: {
-                  value: 10,
-                  message: "রেফার কোড সর্বাধিক ১০ অক্ষরের হতে পারে।",
+                  value: 30,
+                  message: "রেফার কোড সর্বাধিক 30 অক্ষরের হতে পারে।",
                 },
               })}
               color="white"
@@ -245,6 +245,17 @@ const Register = () => {
             )}
           </Button>
         </form>
+        <div className="text-center mt-4">
+          <>
+            আপনার অ্যাকাউন্ট আছে ? {""}
+            <Link
+              to={"/login"}
+              className="text-primary hover:underline"
+            >
+              লগইন করুন
+            </Link>
+          </>
+        </div>
       </div>
     </div>
   );

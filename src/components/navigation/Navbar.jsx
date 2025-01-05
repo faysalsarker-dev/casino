@@ -34,7 +34,7 @@ const navItems = [
 
 const Navbar = () => {
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-background-section shadow-md border-t border-gray-200 z-50">
+    <div className="fixed lg:hidden bottom-0 left-0 w-full bg-background-section shadow-md border-t border-gray-200 z-50">
       <div className="flex justify-around items-center py-2">
         {navItems.map((item, index) => (
           <NavLink
