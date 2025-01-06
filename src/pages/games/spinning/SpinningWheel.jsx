@@ -32,7 +32,7 @@ const [playSpinSound] = useSound(spinSound);
       { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF5722', textColor: '#fff' } },
       { option: '5x', multiplier: 5, style: { backgroundColor: '#E91E63', textColor: '#fff' } },
       { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF9800', textColor: '#fff' } },
-      { option: '4x', multiplier: 4, style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
+      { option: '💣', multiplier: 0, style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
     ],
     []
   );
@@ -85,12 +85,21 @@ const [playSpinSound] = useSound(spinSound);
 
   const { mutateAsync: gameLost } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-lost`, info)).data,
+    onSuccess: (data) => {
+      clearGame();
+    },
+   
     onError: () => toast.error("An error occurred while processing the loss."),
   });
 
   const { mutateAsync: gameWin } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-win`, info)).data,
-    onSuccess: (data) => setUserInfo(data),
+    onSuccess: (data) => {
+      clearGame();
+      setUserInfo(data)
+    },    onError: () => {
+      clearGame();
+    },
   });
 
   const handleSpinClick = useCallback(async () => {
@@ -122,6 +131,7 @@ const [playSpinSound] = useSound(spinSound);
 
   const handleSpinEnd = useCallback(async () => {
     setMustSpin(false);
+    setGaming(false);
     const result = segments[prizeNumber];
     if (result.multiplier === 0) {
       await gameLost({ userEmail: user?.email, betAmount, status: "lost", gameName: GAME_NAME });
@@ -148,8 +158,8 @@ const [playSpinSound] = useSound(spinSound);
 <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary px-4 sm:px-8 md:px-16 lg:px-32">
   {showWinningScreen && <Winning amount={winAmount} />}
 
-  <div className="flex flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-10 w-full max-w-5xl">
-    <div className="h-2/3 lg:h-auto lg:w-1/2">
+  <div className="flex lg:mt-20 flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-10 w-full max-w-5xl">
+    <div className="h-2/3  lg:h-auto lg:w-1/2">
       <SpinWheel
         mustSpin={mustSpin}
         prizeNumber={prizeNumber}

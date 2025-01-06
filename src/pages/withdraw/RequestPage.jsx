@@ -20,7 +20,7 @@ const RequestPage = ({refetch}) => {
     const axiosCommon = useAxios()
     const axiosSecure = useAxiosSecure();
  
-    const { user ,userInfo} = useAuth();
+    const { user ,userInfo ,setUserInfo} = useAuth();
   
 
     const { data, isLoading } = useQuery({
@@ -37,11 +37,12 @@ const RequestPage = ({refetch}) => {
         const { data } = await axiosCommon.post(`/withdraw`, info);
         return data;
       },
-      onSuccess: () => {
+      onSuccess: (data) => {
         toast.success("Withdrawal request submitted successfully.");
         reset();
         refetch()
-        setIsRequesting(false)
+        setIsRequesting(false);
+        setUserInfo(data.user)
        
       },
       onError: () => {

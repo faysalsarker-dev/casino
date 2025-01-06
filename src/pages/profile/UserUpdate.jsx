@@ -48,11 +48,11 @@ const UserUpdate = ({ handleOpen, open = false }) => {
     onSuccess: () => {
       reset();
       handleOpen();
-      toast.success("ইনফরমেশন সফলভাবে আপডেট হয়েছে");
+      toast.success("Information Updated");
     },
     onError: () => {
       console.error("Failed to update user information.");
-      toast.error("ইনফরমেশন আপডেট করা যায়নি");
+      toast.error("something wrong");
     },
   });
 
@@ -66,22 +66,22 @@ const UserUpdate = ({ handleOpen, open = false }) => {
   return (
     <Dialog open={open} handler={handleOpen} className="bg-background-section">
       <DialogHeader className="text-text-primary">
-        আপনার প্রোফাইল আপডেট করুন
+        Update Your Profile 
       </DialogHeader>
       <DialogBody>
         {isWithin30Days && (
           <div className="mb-4 text-red-500 font-medium">
-            আপনি এক মাসের মধ্যে প্রোফাইল আপডেট করতে পারবেন না।
+            You cannot update 2 times in a month
           </div>
         )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              ইউজার নাম
+              Name
             </label>
             <input
               type="text"
-              {...register("name", { required: "ইউজার নাম অবশ্যই দিতে হবে" })}
+              {...register("name", { required: "name is required" })}
               className="block w-full rounded-md bg-background-secondary text-text-primary border border-gray-300 px-4 py-2 focus:border-primary focus:ring-primary"
               disabled={isWithin30Days}
             />
@@ -94,12 +94,12 @@ const UserUpdate = ({ handleOpen, open = false }) => {
 
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              ইমেইল
+              email
             </label>
             <input
               type="email"
               {...register("email", {
-                required: "ইমেইল অবশ্যই দিতে হবে",
+                required: "email is required",
                 pattern: {
                   value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                   message: "সঠিক ইমেইল দিন",
@@ -117,12 +117,12 @@ const UserUpdate = ({ handleOpen, open = false }) => {
 
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              ফোন নাম্বার
+              Phone
             </label>
             <input
               type="text"
               {...register("phone", {
-                required: "ফোন নাম্বার অবশ্যই দিতে হবে",
+                required: "Phone number is required",
                 pattern: {
                   value: /^[0-9]{10,15}$/,
                   message: "সঠিক ফোন নাম্বার দিন",
@@ -145,14 +145,14 @@ const UserUpdate = ({ handleOpen, open = false }) => {
               className="border border-secondary text-secondary"
               onClick={handleOpen}
             >
-              বাতিল করুন
+              cancel
             </Button>
             <Button
               type="submit"
               className="bg-primary text-white"
             //   disabled={isWithin30Days}
             >
-              আপডেট করুন
+              Update
             </Button>
           </div>
         </form>

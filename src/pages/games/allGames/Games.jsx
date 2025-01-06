@@ -10,7 +10,7 @@ import GamelistCard from "../../../components/cards/Gamelist/GamelistCard";
 const games = [
   { image: img1, name: "Lucky777", path: "/games/lucky", title: "Game 1", description: "Try your luck and hit the jackpot!" },
   { image: img2, name: "Mins", path: "/games/mins", title: "Game 2", description: "Mine gems to grow your wealth." },
-  { image: img3, name: "Spinning Wheel", path: "games/spinning", title: "Game 3", description: "Spin the wheel and win rewards." },
+  { image: img3, name: "Spinning Wheel", path: "/games/spinning", title: "Game 3", description: "Spin the wheel and win rewards." },
   { image: img4, name: "Dragon Tower", path: "/games/dragon-tower", title: "Game 4", description: "Climb the tower by guessing right." },
 ];
 

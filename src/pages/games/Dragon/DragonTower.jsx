@@ -24,9 +24,7 @@ const DragonTower = () => {
   const [selectedPath, setSelectedPath] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_selectedPath`)) || []
   );
-  const [difficulty, setDifficulty] = useState(
-    () => localStorage.getItem(`${GAME_NAME}_difficulty`) || "easy"
-  );
+  const [difficulty, setDifficulty] = useState("medium");
   const [betAmount, setBetAmount] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10
   );
@@ -40,7 +38,7 @@ const DragonTower = () => {
     return Array(rows)
       .fill(null)
       .map(() => {
-        const row = Array(3).fill(true);
+        const row = Array(4).fill(true);
         for (let i = 0; i < bombCount; i++) {
           row[i] = false;
         }
@@ -111,7 +109,7 @@ console.log(tower);
         gameWin({
           userEmail: user?.email,
           betAmount,
-          winAmount: betAmount * 10,
+          winAmount: betAmount * 100,
           status: "win",
           gameName: GAME_NAME,
         });
@@ -145,13 +143,11 @@ console.log(tower);
   };
 
   const handleGameStart = () => {
-    if (betAmount < 10) {
-      toast.error("Minimum bet amount is 10.");
-      return;
+   if (userInfo?.depositBalance < betAmount) {
+      return toast.error("You don't have enough balance to play this game.");
     }
-    if (userInfo?.depositBalace < 10) {
-      toast.error("Minimum bet amount is 10.");
-      return;
+    if(betAmount < 10){
+      return toast.error("Bet amount should be at least 10.")
     }
     resetGame();
     gameStart({ userEmail: user?.email, betAmount });
@@ -176,7 +172,7 @@ console.log(tower);
 
   return (
     <div className="flex flex-col lg:flex-row-reverse items-center min-h-screen bg-background text-text-primary p-3">
-      {showWinningScreen && <Winning amount={betAmount * 10} />}
+      {showWinningScreen && <Winning amount={betAmount * 100} />}
     
 
       <div className="mt-24 p-2 rounded-lg grid grid-cols-1 gap-4 w-full h-2/3 bg-background-section">
@@ -248,8 +244,8 @@ console.log(tower);
       <div className="p-3 w-full h-1/3">
         <div className="bg-background-section w-full p-4 rounded-lg mt-5">
         <div className="flex justify-between items-center gap-4">
-  <div className="w-1/2">
-    <label className="block text-sm font-medium mb-1">Bet Amount (10 min)</label>
+  <div className="w-full">
+    <label className="block text-sm font-medium mb-1">WIN 100x</label>
     <input
       type="number"
       value={betAmount}
@@ -260,7 +256,12 @@ console.log(tower);
     />
   </div>
 
-  <div className="w-1/2">
+
+
+{/* for seltected the game easy or medium  */}
+
+
+  {/* <div className="w-1/2">
     <label className="block text-sm font-medium mb-1">Game Mode</label>
    
     <select
@@ -272,7 +273,10 @@ console.log(tower);
       <option value="easy">Easy</option>
       <option value="medium">Medium</option>
     </select>
-  </div>
+  </div> */}
+
+
+
 </div>
 
 

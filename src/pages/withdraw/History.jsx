@@ -74,7 +74,7 @@ const History = ({ info, isError, isLoading }) => {
                       <td className="px-4 py-2 text-sm">
                         <span
                           className={`py-1 px-2 rounded-full text-xs font-medium ${
-                            status === "Success"
+                            status === "success"
                               ? "text-green-300"
                               : "text-yellow-300"
                           }`}

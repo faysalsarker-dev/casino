@@ -16,7 +16,7 @@ import Loading from "../../../components/loading/Loading";
 const GAME_NAME = "mins";
 
 const GemMins = () => {
-  const [bombs, setBombs] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_bombs`)) || 3);
+  const [bombs, setBombs] = useState(1);
   const [betAmount, setBetAmount] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10);
   const [bombIndexes, setBombIndexes] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_bombIndexes`)) || []);
   const [revealed, setRevealed] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_revealed`)) || []);
@@ -31,7 +31,7 @@ const GemMins = () => {
 setRevealed([]);
     }
     if (bombs === 1) {
-    return [2, 5];
+    return [4, 3];
   }
     const calculatedRows = Math.ceil(Math.sqrt(totalCells));
     const calculatedColumns = Math.ceil(totalCells / calculatedRows);
@@ -145,18 +145,18 @@ setRevealed([]);
   const handleWin = useCallback(() => {
     setGaming(false);
     setShowWinningScreen(true);
-    gameWin({ userEmail: user?.email, betAmount, winAmount: betAmount * 10, status: "win", gameName: GAME_NAME });
+    gameWin({ userEmail: user?.email, betAmount, winAmount: betAmount * 50, status: "win", gameName: GAME_NAME });
   }, [user, betAmount, gameWin]);
 
   if (loading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-background text-text-primary">
-      {showWinningScreen && <Winning amount={betAmount * 10} />}
-      <div className="flex flex-col lg:flex-row-reverse items-center gap-6 p-2">
-        <div className="w-full h-2/3 mt-24 bg-background-section p-2 rounded-lg">
+      {showWinningScreen && <Winning amount={betAmount * 50} />}
+      <div className="flex flex-col lg:flex-row-reverse  items-center gap-6 p-2">
+        <div className="w-full h-2/3 mt-24 lg:mt-32 bg-background-section p-2 rounded-lg">
           <div
-            className="grid gap-2"
+            className="grid gap-2 justify-items-center items-center"
             style={{
               gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
             }}
@@ -201,18 +201,19 @@ setRevealed([]);
 
         <div className="p-4 lg:h-full lg:mt-24 h-1/3  mb-12 bg-background-section rounded-lg shadow-lg w-full space-y-6  ">
           <div className="flex justify-between items-center gap-4">
-            <div className="w-1/2">
-              <label className="block text-sm font-medium mb-1">Bet Amount (10 min)</label>
+            <div className="w-full">
+              <label className="block text-sm font-medium mb-1">WIN 50x</label>
               <input
                 type="number"
                 value={betAmount}
                 disabled={gaming}
                 onChange={(e) => setBetAmount(parseInt(e.target.value))}
+                min={10}
                 className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
               />
             </div>
 
-            <div className="w-1/2">
+            {/* <div className="w-1/2">
               <label className="block text-sm font-medium mb-2">Bombs</label>
               <select
                 value={bombs}
@@ -224,7 +225,7 @@ setRevealed([]);
                 <option value="2">2</option>
                 <option value="3">3</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           <Button disabled={gaming} onClick={handleStartGame} className="bg-primary w-full" size="lg">

@@ -56,14 +56,14 @@ const BalanceTransfer = ({ handleOpen, open = false}) => {
   return (
     <Dialog open={open} handler={handleOpen} className="bg-background-section">
       <DialogHeader className="text-text-primary">
-        ব্যালেন্স ট্রান্সফার করুন
+        Balance Transfer
       </DialogHeader>
       <DialogBody>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Select Field for Sender */}
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              প্রেরক
+            from
             </label>
             <select
               {...register("sender", { required: "প্রেরক নির্বাচন করুন।" })}
@@ -84,7 +84,7 @@ const BalanceTransfer = ({ handleOpen, open = false}) => {
           {/* Select Field for Receiver */}
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              প্রাপক
+              To
             </label>
             <select
               {...register("receiver", { required: "প্রাপক নির্বাচন করুন।" })}
@@ -105,19 +105,19 @@ const BalanceTransfer = ({ handleOpen, open = false}) => {
           {/* Input Field for Amount */}
           <div>
             <label className="block text-sm font-medium text-text-primary">
-              ট্রান্সফার পরিমাণ
+              Amountণ
             </label>
             <input
               type="number"
               {...register("amount", {
-                required: "পরিমাণ দিতে হবে।",
+                required: "amount is required",
                 min: {
                   value: 10,
                   message: "পরিমাণ অবশ্যই ১০ বা তার বেশি হতে হবে।",
                 },
               })}
               className="block w-full rounded-md bg-background-secondary text-text-primary border border-gray-300 px-4 py-2 focus:border-primary focus:ring-primary"
-              placeholder="পরিমাণ লিখুন"
+              placeholder="Type amount"
             />
             {errors.amount && (
               <span className="text-red-500 text-sm">
@@ -133,10 +133,10 @@ const BalanceTransfer = ({ handleOpen, open = false}) => {
               className="border border-secondary text-secondary"
               onClick={handleOpen}
             >
-              বাতিল করুন
+             cencel
             </Button>
             <Button type="submit" className="bg-primary text-white">
-              ট্রান্সফার করুন
+              Transfer
             </Button>
           </div>
         </form>

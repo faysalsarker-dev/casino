@@ -17,7 +17,7 @@ const symbolHeight = 112;
 const getRandomSymbol = () => symbols[Math.floor(Math.random() * symbols.length)];
 
 const Lucky777 = () => {
-  const { setUserInfo, user, loading } = useAuth();
+  const { setUserInfo, user, loading,userInfo} = useAuth();
   
   
   const axiosSecure = useAxiosSecure();
@@ -43,13 +43,20 @@ const Lucky777 = () => {
   const { mutateAsync: gameStart } = useMutation({
     mutationFn: async (info) => axiosSecure.post(`/game/games-start`, info).then(res => res.data),
     onSuccess: (data) => setUserInfo(data),
-    onError: () => toast.error('An error occurred while starting the game.'),
+    onError: () => {
+      setSpinning(false);
+      toast.error('An error occurred while starting the game.')
+    },
   });
 
   const { mutateAsync: gameLost } = useMutation({
     mutationFn: async (info) => axiosSecure.post(`/game/games-lost`, info).then(res => res.data),
     onSuccess: () => setGaming(false),
-    onError: () => setGaming(false),
+    onError: () => {
+      setShowWinningScreen(false);
+      setSpinning(false);
+      setGaming(false);
+    },
   });
 
   const { mutateAsync: gameWin } = useMutation({
@@ -61,6 +68,7 @@ const Lucky777 = () => {
     },
     onError: () => {
       setShowWinningScreen(false);
+      setSpinning(false);
       setGaming(false);
     },
   });
@@ -69,6 +77,7 @@ const Lucky777 = () => {
     if (spinning) {
       const timer = setTimeout(() => {
         setSpinning(false);
+        setGaming(false)
         checkWin(reels, user?.email);
       }, 3000);
 
@@ -77,16 +86,19 @@ const Lucky777 = () => {
   }, [spinning, reels, user?.email]);
 
   const spinReels = () => {
-    if (betAmount < 10) {
-      toast.error('Minimum bet amount is 10.');
-      return;
+    if (userInfo?.depositBalance < betAmount) {
+      return toast.error("You don't have enough balance to play this game.");
+    }
+    if(betAmount < 10){
+      return toast.error("Bet amount should be at least 10.")
     }
 
     setGaming(true);
+    
     const gameInfo = { userEmail: user?.email, betAmount };
     gameStart(gameInfo);
-
     setSpinning(true);
+    
     setMessage('');
     // resetAudio(spinSound.current);
     playSpinSound()
@@ -96,6 +108,7 @@ const Lucky777 = () => {
 
     setTimeout(() => {
       setSpinning(false);
+      setGaming(false)
       checkWin(newReels);
     }, 3000);
   };
@@ -105,20 +118,22 @@ const Lucky777 = () => {
       await gameWin({
         userEmail,
         betAmount,
-        winAmount: betAmount * 100,
+        winAmount: betAmount * 5,
         status: 'win',
         gameName: GAME_NAME,
       });
-      postWinActions('Jackpot! You won 100!', betAmount * 100);
+      
+      postWinActions('Jackpot! You won', betAmount * 5 ,"!");
     } else if (newReels[0] === newReels[1] && newReels[1] === newReels[2]) {
       await gameWin({
         userEmail,
         betAmount,
-        winAmount: betAmount * 10,
+        winAmount: betAmount * 2,
         status: 'win',
         gameName: GAME_NAME,
       });
-      postWinActions('You won 50!', betAmount * 10);
+      
+      postWinActions('You won', betAmount * 5 , '!');
     } else {
       await gameLost({
         userEmail,
@@ -126,6 +141,7 @@ const Lucky777 = () => {
         status: 'lost',
         gameName: GAME_NAME,
       });
+    
       postLoseActions();
     }
   };
@@ -159,8 +175,8 @@ const Lucky777 = () => {
 
   return (
     <div className="max-w-5xl mx-auto  flex flex-col items-center justify-center min-h-screen bg-background text-text-primary">
-      {showWinningScreen && <Winning amount={betAmount * 10} />}
-      <div className="w-full mt-20">
+      {showWinningScreen && <Winning amount={betAmount * 5} />}
+      <div className="w-full mt-20 ">
         <div className="bg-gradient-to-r from-purple-700 to-purple-500 w-full text-center py-4 shadow-md">
           <Typography variant="h2" className="text-3xl font-bold text-white">
             Lucky 777
@@ -198,11 +214,12 @@ const Lucky777 = () => {
         <div className="flex justify-between items-center gap-4">
           <div className="w-full">
             <label className="block text-sm font-medium mb-1">
-              Bet Amount (10 min)
+              WIN 5x
             </label>
             <input
               type="number"
               value={betAmount}
+              min={10}
               onChange={(e) => setBetAmount(Math.max(parseInt(e.target.value) ))}
               className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
               

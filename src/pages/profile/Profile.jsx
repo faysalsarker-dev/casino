@@ -56,14 +56,14 @@ const Profile = () => {
 
       {/* Main Wallet Section */}
       <div className="bg-background-secondary shadow-md rounded-lg p-4 mb-6">
-        <h2 className="text-lg font-semibold">মেইন ওয়ালেট</h2>
+        <h2 className="text-lg font-semibold">Main Wallet</h2>
         <div className="mt-4 space-y-4">
           <div className="flex justify-between items-center">
-            <p className="text-sm">জিতের ব্যালেন্স</p>
+            <p className="text-sm">Win Balance</p>
             <p className="text-xl font-bold text-primary">৳ {userInfo?.winBalance}</p>
           </div>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-gray-300">ডিপোজিট ব্যালেন্স</p>
+            <p className="text-sm text-gray-300">Deposit Balance</p>
             <p className="text-xl font-bold text-secondary">৳ {userInfo?.depositBalance}</p>
           </div>
         </div>
@@ -73,16 +73,16 @@ const Profile = () => {
       <div className="space-y-6">
         {/* Deposit and Withdraw */}
         <div className="bg-background-secondary shadow-md rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">তহবিল</h3>
+          <h3 className="text-lg font-semibold mb-4">Deposit & Withdraw</h3>
           <div className="grid grid-cols-2 gap-4">
             <Link to="/deposit">
               <Button variant="filled" className="w-full bg-secondary flex items-center justify-center">
-                <FaCreditCard className="mr-2" /> ডিপোজিট
+                <FaCreditCard className="mr-2" /> Deposit
               </Button>
             </Link>
             <Link to="/withdraw">
               <Button variant="outlined" className="w-full bg-primary text-text-primary flex items-center justify-center">
-                <FaCreditCard className="mr-2" /> উত্তোলন
+                <FaCreditCard className="mr-2" /> Withdraw
               </Button>
             </Link>
           </div>
@@ -96,11 +96,11 @@ const Profile = () => {
               onClick={handleOpen}
               className="w-full p-3 rounded-lg gap-4 bg-background-section border-border border-2 flex items-center justify-start cursor-pointer"
             >
-              <FaUser className="text-secondary" /> ব্যাক্তিগত তথ্য
+              <FaUser className="text-secondary" /> Personal info
             </div>
             <Link to="/reset">
               <div className="w-full p-3 bg-background-section rounded-lg gap-4 border-border border-2 flex items-center justify-start">
-                <RiLockPasswordFill className="text-secondary" /> পাসওয়ার্ড রিসেট করুন
+                <RiLockPasswordFill className="text-secondary" /> Password Reset
               </div>
             </Link>
             <BalanceTransfer handleOpen={handleBalanseOpen} open={BalanceOpen} />
@@ -108,7 +108,7 @@ const Profile = () => {
               onClick={handleBalanseOpen}
               className="w-full p-3 bg-background-section rounded-lg gap-4 border-border border-2 flex items-center justify-start cursor-pointer"
             >
-              <FaMoneyCheckDollar className="text-secondary" /> ব্যালেন্স স্থানান্তর
+              <FaMoneyCheckDollar className="text-secondary" /> Balance Transfer
             </div>
           </div>
         </>
@@ -119,7 +119,7 @@ const Profile = () => {
               onClick={OnLogout}
               variant="filled"
               color="red"
-              className="w-full flex items-center justify-center"
+              className="w-full flex items-center justify-center mb-20"
             >
               <FiLogOut className="mr-2" /> লগ আউট
             </Button>

@@ -4,8 +4,8 @@ import 'swiper/css/pagination';
 import { Autoplay, Pagination } from 'swiper/modules';
 import useAxios from '../../hooks/useAxios/useAxios';
 import { useQuery } from '@tanstack/react-query';
-import Skeleton from 'react-loading-skeleton'; // Import Skeleton
-import 'react-loading-skeleton/dist/skeleton.css'; // Import Skeleton styles
+import Skeleton from 'react-loading-skeleton'; 
+import 'react-loading-skeleton/dist/skeleton.css'; 
 
 
 export default function Sliders() {
@@ -17,6 +17,8 @@ export default function Sliders() {
       const { data } = await axiosCommon.get(`/sliders`);
       return data;
     },
+    staleTime: 1000 * 60 * 10, // Consider data fresh for 10 minutes
+    cacheTime: 1000 * 60 * 20, // Keep data in cache for 20 minutes
   });
 
   // Handle loading state with skeletons

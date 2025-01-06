@@ -8,11 +8,14 @@ const Support = () => {
   const axiosSecure = useAxiosSecure();
 
   const { data = [], isLoading, isError } = useQuery({
-    queryKey: ['Support'],
+    queryKey: ['Support'], // Unique identifier for this query
     queryFn: async () => {
       const { data } = await axiosSecure.get('/supports');
-      return data;
+      return data; // The data you want to cache
     },
+    staleTime: 1000 * 60 * 5, // Data is considered fresh for 5 minutes
+    cacheTime: 1000 * 60 * 10, // Cache the data for 10 minutes
+    refetchOnWindowFocus: true, // Default: refetch data when window regains focus
   });
 
   const getThemeColor = (name) => {
