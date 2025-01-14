@@ -16,7 +16,7 @@ import Loading from "../../../components/loading/Loading";
 const GAME_NAME = "mins";
 
 const GemMins = () => {
-  const [bombs, setBombs] = useState(1);
+  const [bombs] = useState(1);
   const [betAmount, setBetAmount] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10);
   const [bombIndexes, setBombIndexes] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_bombIndexes`)) || []);
   const [revealed, setRevealed] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_revealed`)) || []);
@@ -108,6 +108,10 @@ setRevealed([]);
     if(betAmount < 10){
       return toast.error("Bet amount should be at least 10.")
     }
+    setUserInfo({
+      ...userInfo, 
+      depositBalance: userInfo.depositBalance - betAmount
+    });
     setGaming(true);
     const totalCells = bombs * 10;
     gameStart({ userEmail: user?.email, betAmount });
@@ -137,6 +141,10 @@ setRevealed([]);
 
       if (updatedRevealed.length === rows * columns - bombs) {
         handleWin();
+        setUserInfo({
+          ...userInfo, 
+          winBalance: userInfo.winBalance + betAmount * 50
+        });
       }
     },
     [revealed, bombIndexes, bombs, user, rows, columns, playBombSound, playGemSound, gameLost]

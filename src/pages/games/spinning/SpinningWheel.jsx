@@ -8,8 +8,6 @@ import { Button } from '@material-tailwind/react';
 import Winning from '../../../components/winning/Winning';
 import Loading from '../../../components/loading/Loading';
 import SpinWheel from './SpinWheel';
-import useSound from 'use-sound';
-import spinSound from "../../../audio/spin.mp3";
 
 const GAME_NAME = "spinning-wheel";
 
@@ -20,7 +18,6 @@ const SpinningWheel = () => {
   const [gaming, setGaming] = useState(false);
   const [showWinningScreen, setShowWinningScreen] = useState(false);
   const [winAmount, setWinAmount] = useState(0);
-  const [play, { stop }] = useSound(spinSound);
 
   const { setUserInfo, user, loading, userInfo } = useAuth();
   const axiosSecure = useAxiosSecure();
@@ -36,41 +33,20 @@ const SpinningWheel = () => {
     { option: '💣', multiplier: 0, style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
   ], []);
 
-  // Initialize state from local storage
-  const initializeState = useCallback(() => {
-    const storedState = ["mustSpin", "prizeNumber", "betAmount", "gaming"].reduce(
-      (acc, key) => ({
-        ...acc,
-        [key]: JSON.parse(localStorage.getItem(`${GAME_NAME}_${key}`)) || (key === "betAmount" ? 10 : key === gaming ? false : key === mustSpin ? false : null),
-      }),
-      {}
-    );
-
-    setMustSpin(storedState.mustSpin);
-    setPrizeNumber(storedState.prizeNumber);
-    setBetAmount(storedState.betAmount);
-    setGaming(storedState.gaming);
-  }, []);
-
   useEffect(() => {
-    initializeState();
-  }, [initializeState]);
+    const handleBeforeUnload = (event) => {
+      if (gaming) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    };
 
-  const saveStateToLocalStorage = useCallback((state) => {
-    Object.entries(state).forEach(([key, value]) =>
-      localStorage.setItem(`${GAME_NAME}_${key}`, JSON.stringify(value))
-    );
-  }, []);
+    window.addEventListener('beforeunload', handleBeforeUnload);
 
-  useEffect(() => {
-    saveStateToLocalStorage({ mustSpin, prizeNumber, betAmount, gaming });
-  }, [mustSpin, prizeNumber, betAmount, gaming, saveStateToLocalStorage]);
-
-  const clearGame = useCallback(() => {
-    ["mustSpin", "prizeNumber", "betAmount", "gaming"].forEach((key) =>
-      localStorage.removeItem(`${GAME_NAME}_${key}`)
-    );
-  }, []);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [gaming]);
 
   const { mutateAsync: gameStart } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-start`, info)).data,
@@ -83,17 +59,16 @@ const SpinningWheel = () => {
 
   const { mutateAsync: gameLost } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-lost`, info)).data,
-    onSuccess: clearGame,
+    onSuccess: () => {},
     onError: () => toast.error("An error occurred while processing the loss."),
   });
 
   const { mutateAsync: gameWin } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-win`, info)).data,
     onSuccess: (data) => {
-      clearGame();
       setUserInfo(data);
     },
-    onError: clearGame,
+    onError: () => {},
   });
 
   const handleSpinClick = useCallback(async () => {
@@ -109,38 +84,44 @@ const SpinningWheel = () => {
       toast.error("Minimum bet amount is 10.");
       return;
     }
-
+    setUserInfo({
+      ...userInfo, 
+      depositBalance: userInfo.depositBalance - betAmount
+    });
     setShowWinningScreen(false);
     setGaming(true);
 
     try {
-      await gameStart({ userEmail: user?.email, betAmount });
       const randomPrize = Math.floor(Math.random() * segments.length);
       setPrizeNumber(randomPrize);
+     await gameStart({ userEmail: user?.email, betAmount });
       setMustSpin(true);
-      play();
     } catch {
       setGaming(false);
     }
-  }, [gaming, user?.email, betAmount, gameStart, segments.length, play, userInfo?.depositBalance]);
+  }, [gaming, user?.email, betAmount, gameStart, segments.length, userInfo?.depositBalance]);
 
   const handleSpinEnd = useCallback(async () => {
-    stop();
     setMustSpin(false);
     const result = segments[prizeNumber];
 
     if (result.multiplier === 0) {
-      await gameLost({ userEmail: user?.email, betAmount, status: "lost", gameName: GAME_NAME });
       toast.error("You lost! Better luck next time.");
+      await gameLost({ userEmail: user?.email, betAmount, status: "lost", gameName: GAME_NAME });
+      
     } else {
       const winnings = betAmount * result.multiplier;
       setWinAmount(winnings);
       setShowWinningScreen(true);
+      setUserInfo({
+        ...userInfo, 
+        winBalance: userInfo.winBalance + winnings
+      });
       await gameWin({ userEmail: user?.email, betAmount, winAmount: winnings, status: "win", gameName: GAME_NAME });
     }
 
     setGaming(false);
-  }, [segments, prizeNumber, betAmount, user?.email, gameLost, gameWin, stop]);
+  }, [segments, prizeNumber, betAmount, user?.email, gameLost, gameWin]);
 
   const handleBetChange = useCallback((e) => {
     const value = Math.max(10, parseInt(e.target.value, 10) || 0);

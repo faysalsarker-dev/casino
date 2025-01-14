@@ -24,7 +24,7 @@ const DragonTower = () => {
   const [selectedPath, setSelectedPath] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_selectedPath`)) || []
   );
-  const [difficulty, setDifficulty] = useState("medium");
+  const [difficulty] = useState("medium");
   const [betAmount, setBetAmount] = useState(
     () => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10
   );
@@ -106,6 +106,10 @@ console.log(tower);
         setGaming(false);
         setShowWinningScreen(true);
         playEggSound();
+        setUserInfo({
+          ...userInfo, 
+          winBalance: userInfo.winBalance + betAmount * 100
+        });
         gameWin({
           userEmail: user?.email,
           betAmount,
@@ -149,6 +153,10 @@ console.log(tower);
     if(betAmount < 10){
       return toast.error("Bet amount should be at least 10.")
     }
+    setUserInfo({
+      ...userInfo, 
+      depositBalance: userInfo.depositBalance - betAmount
+    });
     resetGame();
     gameStart({ userEmail: user?.email, betAmount });
   };
