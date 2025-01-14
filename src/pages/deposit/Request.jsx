@@ -31,7 +31,7 @@ const Request = ({ refetch }) => {
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ["peyment"],
     queryFn: async () => {
-      const { data } = await axiosSecure.get("/peyment");
+      const { data } = await axiosSecure.get("/payment");
       return data;
     },
   });

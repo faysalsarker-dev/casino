@@ -91,30 +91,40 @@ const Profile = () => {
         {/* Profile */}
         <>
           <UserUpdate handleOpen={handleOpen} open={open} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div
+       
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
+
+          {
+            user && (
+              <div
               onClick={handleOpen}
               className="w-full p-3 rounded-lg gap-4 bg-background-section border-border border-2 flex items-center justify-start cursor-pointer"
             >
               <FaUser className="text-secondary" /> Personal info
             </div>
+            )
+          }
+      
             <Link to="/reset">
               <div className="w-full p-3 bg-background-section rounded-lg gap-4 border-border border-2 flex items-center justify-start">
                 <RiLockPasswordFill className="text-secondary" /> Password Reset
               </div>
             </Link>
             <BalanceTransfer handleOpen={handleBalanseOpen} open={BalanceOpen} />
-            <div
+
+{
+  user && (
+<div
               onClick={handleBalanseOpen}
               className="w-full p-3 bg-background-section rounded-lg gap-4 border-border border-2 flex items-center justify-start cursor-pointer"
             >
               <FaMoneyCheckDollar className="text-secondary" /> Balance Transfer
             </div>
-          </div>
-        </>
+  )
+}
 
-        {user && (
-          <div className="text-center mb-10">
+{user && (
+          <div className="text-center  md:col-span-2 mt-4">
             <Button
               onClick={OnLogout}
               variant="filled"
@@ -125,6 +135,11 @@ const Profile = () => {
             </Button>
           </div>
         )}
+            
+          </div>
+        </>
+
+       
       </div>
     </div>
   );

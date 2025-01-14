@@ -87,9 +87,11 @@ const router = createBrowserRouter([
       {
         path: "/deposit",
         element: (
-          <Suspense fallback={<Loading />}>
-            <DepositPage />
-          </Suspense>
+      <Protector>
+            <Suspense fallback={<Loading />}>
+              <DepositPage />
+            </Suspense>
+      </Protector>
         ),
       },
       {

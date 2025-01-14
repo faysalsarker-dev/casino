@@ -33,7 +33,7 @@ const Topbar = () => {
     <div className="fixed top-0 left-0 w-full z-50 bg-background-section px-4 py-3 shadow-xl rounded-lg flex justify-between items-center">
       {/* Logo Section */}
       <div className="text-3xl font-extrabold text-white">
-      xBetbd
+     <Link to='/'> xBet<span className='text-blue-500'>Bd</span></Link>
       </div>
 
       {/* Navigation Links (Desktop) */}

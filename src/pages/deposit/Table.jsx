@@ -6,7 +6,7 @@ const TABLE_HEAD = ["Type", "Transaction Code", "Number", "Status"];
 const Table = ({ isLoading, isError, data }) => {
   return (
     <div>
-      <div className="overflow-hidden mt-5 bg-background">
+      <div className="overflow-hidden mt-5 mb-10 bg-background">
         <div className="p-0 overflow-x-auto">
           <table className="w-full table-auto text-center text-text-primary">
             <thead>

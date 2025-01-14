@@ -18,7 +18,7 @@ const RequestPage = ({refetch}) => {
   const [isRequesting,setIsRequesting] = useState(false);
     const { register, handleSubmit, reset } = useForm();
     const axiosCommon = useAxios()
-    const axiosSecure = useAxiosSecure();
+   
  
     const { user ,userInfo ,setUserInfo} = useAuth();
   
@@ -26,7 +26,7 @@ const RequestPage = ({refetch}) => {
     const { data, isLoading } = useQuery({
       queryKey: ["peyment"],
       queryFn: async () => {
-        const { data } = await axiosSecure.get("/peyment");
+        const { data } = await axiosCommon.get("/payment");
         return data;
       },
     });

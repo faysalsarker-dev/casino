@@ -10,6 +10,7 @@ import Reel from './Reel';
 import Loading from './../../../components/loading/Loading';
 import useSound from 'use-sound';
 import spinSound from "../../../audio/spin.mp3";
+
 const symbols = ['🍒', '🍋', '🍊', '7'];
 const GAME_NAME = 'luck777';
 const symbolHeight = 112;
@@ -21,13 +22,18 @@ const Lucky777 = () => {
   
   
   const axiosSecure = useAxiosSecure();
-  const [playSpinSound] = useSound(spinSound);
+  const [play, { stop }] = useSound(spinSound);
   const [reels, setReels] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_reels`)) || ['🍒', '🍋', '🍊']);
   const [spinning, setSpinning] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_spinning`)) || false);
   const [betAmount, setBetAmount] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_betAmount`)) || 10);
   const [message, setMessage] = useState('');
   const [gaming, setGaming] = useState(() => JSON.parse(localStorage.getItem(`${GAME_NAME}_gaming`)) || false);
   const [showWinningScreen, setShowWinningScreen] = useState(false);
+
+
+
+
+
 
   const saveGameState = useCallback(() => {
     localStorage.setItem(`${GAME_NAME}_reels`, JSON.stringify(reels));
@@ -76,6 +82,7 @@ const Lucky777 = () => {
   useEffect(() => {
     if (spinning) {
       const timer = setTimeout(() => {
+        
         setSpinning(false);
         setGaming(false)
         checkWin(reels, user?.email);
@@ -92,7 +99,7 @@ const Lucky777 = () => {
     if(betAmount < 10){
       return toast.error("Bet amount should be at least 10.")
     }
-
+    play()
     setGaming(true);
     
     const gameInfo = { userEmail: user?.email, betAmount };
@@ -100,9 +107,7 @@ const Lucky777 = () => {
     setSpinning(true);
     
     setMessage('');
-    // resetAudio(spinSound.current);
-    playSpinSound()
-
+    
     const newReels = [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()];
     setReels(newReels);
 
@@ -114,6 +119,7 @@ const Lucky777 = () => {
   };
 
   const checkWin = async (newReels, userEmail = user?.email) => {
+    stop()
     if (newReels.every((symbol) => symbol === '7')) {
       await gameWin({
         userEmail,

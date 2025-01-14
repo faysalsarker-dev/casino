@@ -1,7 +1,10 @@
 import { Wheel } from 'react-custom-roulette';
 import PropTypes from 'prop-types';
 
-const SpinWheel = ({mustSpin,prizeNumber,segments,handleSpinEnd}) => {
+
+
+
+const SpinWheel = ({mustSpin = false,segments ,prizeNumber = 0,handleSpinEnd}) => {
     return (
       <div className="flex flex-col relative items-center justify-center overflow-hidden">
           <div className="p-4 ">

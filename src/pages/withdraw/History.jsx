@@ -8,7 +8,7 @@ const History = ({ info, isError, isLoading }) => {
 
   return (
     <div>
-      <div className="overflow-hidden mt-5 bg-background">
+      <div className="overflow-hidden mt-5 mb-10 bg-background">
         <div className="p-0 overflow-x-auto">
           <table className="w-full table-auto text-center text-text-primary">
             <thead>
@@ -74,7 +74,7 @@ const History = ({ info, isError, isLoading }) => {
                       <td className="px-4 py-2 text-sm">
                         <span
                           className={`py-1 px-2 rounded-full text-xs font-medium ${
-                            status === "success"
+                            status === "approved"
                               ? "text-green-300"
                               : "text-yellow-300"
                           }`}

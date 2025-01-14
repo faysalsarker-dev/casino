@@ -41,7 +41,7 @@ const History = () => {
           <p className="text-center opacity-70">No game history available.</p>
         )}
 
-        <div className="space-y-4">
+        <div className="space-y-4 mb-10">
           {!isLoading &&
             gameHistory.map((item) => (
               <div

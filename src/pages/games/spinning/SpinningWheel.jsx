@@ -10,56 +10,57 @@ import Loading from '../../../components/loading/Loading';
 import SpinWheel from './SpinWheel';
 import useSound from 'use-sound';
 import spinSound from "../../../audio/spin.mp3";
+
 const GAME_NAME = "spinning-wheel";
 
 const SpinningWheel = () => {
   const [mustSpin, setMustSpin] = useState(false);
-  const [prizeNumber, setPrizeNumber] = useState(0);
+  const [prizeNumber, setPrizeNumber] = useState(null);
   const [betAmount, setBetAmount] = useState(10);
   const [gaming, setGaming] = useState(false);
   const [showWinningScreen, setShowWinningScreen] = useState(false);
   const [winAmount, setWinAmount] = useState(0);
-const [playSpinSound] = useSound(spinSound);
-  const { setUserInfo, user, loading,userInfo } = useAuth();
+  const [play, { stop }] = useSound(spinSound);
+
+  const { setUserInfo, user, loading, userInfo } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const segments = useMemo(
-    () => [
-      { option: '2x', multiplier: 2, style: { backgroundColor: '#009688', textColor: '#fff' } },
-      { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FFC107', textColor: '#fff' } },
-      { option: '10x', multiplier: 10, style: { backgroundColor: '#9C27B0', textColor: '#fff' } },
-      { option: '0.0x', multiplier: 0.0, style: { backgroundColor: '#8BC34A', textColor: '#fff' } },
-      { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF5722', textColor: '#fff' } },
-      { option: '5x', multiplier: 5, style: { backgroundColor: '#E91E63', textColor: '#fff' } },
-      { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF9800', textColor: '#fff' } },
-      { option: '💣', multiplier: 0, style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
-    ],
-    []
-  );
+  const segments = useMemo(() => [
+    { option: '2x', multiplier: 2, style: { backgroundColor: '#009688', textColor: '#fff' } },
+    { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FFC107', textColor: '#fff' } },
+    { option: '10x', multiplier: 10, style: { backgroundColor: '#9C27B0', textColor: '#fff' } },
+    { option: '0.0x', multiplier: 0.0, style: { backgroundColor: '#8BC34A', textColor: '#fff' } },
+    { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF5722', textColor: '#fff' } },
+    { option: '5x', multiplier: 5, style: { backgroundColor: '#E91E63', textColor: '#fff' } },
+    { option: '0.2x', multiplier: 0.2, style: { backgroundColor: '#FF9800', textColor: '#fff' } },
+    { option: '💣', multiplier: 0, style: { backgroundColor: '#3F51B5', textColor: '#fff' } },
+  ], []);
 
-  useEffect(() => {
+  // Initialize state from local storage
+  const initializeState = useCallback(() => {
     const storedState = ["mustSpin", "prizeNumber", "betAmount", "gaming"].reduce(
-      (acc, key) => ({ ...acc, [key]: JSON.parse(localStorage.getItem(`${GAME_NAME}_${key}`)) }),
+      (acc, key) => ({
+        ...acc,
+        [key]: JSON.parse(localStorage.getItem(`${GAME_NAME}_${key}`)) || (key === "betAmount" ? 10 : key === gaming ? false : key === mustSpin ? false : null),
+      }),
       {}
     );
-    if (storedState.mustSpin) setMustSpin(storedState.mustSpin);
-    if (storedState.prizeNumber !== null) setPrizeNumber(storedState.prizeNumber);
-    if (storedState.betAmount !== null) setBetAmount(storedState.betAmount);
-    if (storedState.gaming) setGaming(storedState.gaming);
 
-    if (storedState.mustSpin) {
-      setTimeout(() => setMustSpin(true), 0);
-    }
+    setMustSpin(storedState.mustSpin);
+    setPrizeNumber(storedState.prizeNumber);
+    setBetAmount(storedState.betAmount);
+    setGaming(storedState.gaming);
   }, []);
 
-  const saveStateToLocalStorage = useCallback(
-    (state) => {
-      Object.entries(state).forEach(([key, value]) =>
-        localStorage.setItem(`${GAME_NAME}_${key}`, JSON.stringify(value))
-      );
-    },
-    []
-  );
+  useEffect(() => {
+    initializeState();
+  }, [initializeState]);
+
+  const saveStateToLocalStorage = useCallback((state) => {
+    Object.entries(state).forEach(([key, value]) =>
+      localStorage.setItem(`${GAME_NAME}_${key}`, JSON.stringify(value))
+    );
+  }, []);
 
   useEffect(() => {
     saveStateToLocalStorage({ mustSpin, prizeNumber, betAmount, gaming });
@@ -73,10 +74,7 @@ const [playSpinSound] = useSound(spinSound);
 
   const { mutateAsync: gameStart } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-start`, info)).data,
-    onSuccess: (data) => {
-     setUserInfo(data);
-     playSpinSound()
-    },
+    onSuccess: (data) => setUserInfo(data),
     onError: () => {
       setGaming(false);
       toast.error("An error occurred while starting the game.");
@@ -85,10 +83,7 @@ const [playSpinSound] = useSound(spinSound);
 
   const { mutateAsync: gameLost } = useMutation({
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-lost`, info)).data,
-    onSuccess: (data) => {
-      clearGame();
-    },
-   
+    onSuccess: clearGame,
     onError: () => toast.error("An error occurred while processing the loss."),
   });
 
@@ -96,10 +91,9 @@ const [playSpinSound] = useSound(spinSound);
     mutationFn: async (info) => (await axiosSecure.post(`/game/games-win`, info)).data,
     onSuccess: (data) => {
       clearGame();
-      setUserInfo(data)
-    },    onError: () => {
-      clearGame();
+      setUserInfo(data);
     },
+    onError: clearGame,
   });
 
   const handleSpinClick = useCallback(async () => {
@@ -107,94 +101,92 @@ const [playSpinSound] = useSound(spinSound);
       toast.error("Game is already in progress.");
       return;
     }
-    if (userInfo?.depositBalace < betAmount ) {
+    if (userInfo?.depositBalance < betAmount) {
       toast.error("You don't have enough balance to play this game.");
       return;
     }
-    if ( betAmount < 10 ) {
+    if (betAmount < 10) {
       toast.error("Minimum bet amount is 10.");
       return;
     }
 
     setShowWinningScreen(false);
     setGaming(true);
+
     try {
       await gameStart({ userEmail: user?.email, betAmount });
       const randomPrize = Math.floor(Math.random() * segments.length);
       setPrizeNumber(randomPrize);
       setMustSpin(true);
-     
+      play();
     } catch {
       setGaming(false);
     }
-  }, [gaming, user?.email, betAmount, gameStart, segments.length]);
+  }, [gaming, user?.email, betAmount, gameStart, segments.length, play, userInfo?.depositBalance]);
 
   const handleSpinEnd = useCallback(async () => {
+    stop();
     setMustSpin(false);
-    setGaming(false);
     const result = segments[prizeNumber];
+
     if (result.multiplier === 0) {
       await gameLost({ userEmail: user?.email, betAmount, status: "lost", gameName: GAME_NAME });
-      clearGame();
       toast.error("You lost! Better luck next time.");
     } else {
       const winnings = betAmount * result.multiplier;
       setWinAmount(winnings);
       setShowWinningScreen(true);
       await gameWin({ userEmail: user?.email, betAmount, winAmount: winnings, status: "win", gameName: GAME_NAME });
-      clearGame();
     }
-    setGaming(false);
-  }, [segments, prizeNumber, betAmount, user?.email, gameLost, gameWin, clearGame]);
 
-  const handleBetChange = useCallback(
-    (e) => setBetAmount(Math.max(parseInt(e.target.value))),
-    []
-  );
+    setGaming(false);
+  }, [segments, prizeNumber, betAmount, user?.email, gameLost, gameWin, stop]);
+
+  const handleBetChange = useCallback((e) => {
+    const value = Math.max(10, parseInt(e.target.value, 10) || 0);
+    setBetAmount(value);
+  }, []);
 
   if (loading) return <Loading />;
 
   return (
-<div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary px-4 sm:px-8 md:px-16 lg:px-32">
-  {showWinningScreen && <Winning amount={winAmount} />}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background text-text-primary px-4 sm:px-8 md:px-16 lg:px-32">
+      {showWinningScreen && <Winning amount={winAmount} />}
 
-  <div className="flex lg:mt-20 flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-10 w-full max-w-5xl">
-    <div className="h-2/3  lg:h-auto lg:w-1/2">
-      <SpinWheel
-        mustSpin={mustSpin}
-        prizeNumber={prizeNumber}
-        segments={segments}
-        handleSpinEnd={handleSpinEnd}
-      />
-    </div>
-
-    <div className="p-4 lg:w-1/3 mt-10 mb-10 bg-background-section rounded-lg shadow-lg space-y-6">
-      <div className="flex flex-col gap-4">
-        <div className="w-full">
-          <label className="block text-sm font-medium mb-1">
-            Minimum bet amount is 10
-          </label>
-          <input
-            type="number"
-            value={betAmount}
-            onChange={handleBetChange}
-            className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
+      <div className="flex lg:mt-20 flex-col lg:flex-row lg:items-start lg:justify-center lg:gap-10 w-full max-w-5xl">
+        <div className="h-2/3 lg:h-auto lg:w-1/2">
+          <SpinWheel
+            mustSpin={mustSpin}
+            prizeNumber={prizeNumber}
+            segments={segments}
+            handleSpinEnd={handleSpinEnd}
           />
         </div>
+
+        <div className="p-4 lg:w-1/3 mt-10 mb-10 bg-background-section rounded-lg shadow-lg space-y-6">
+          <div className="flex flex-col gap-4">
+            <div className="w-full">
+              <label className="block text-sm font-medium mb-1">Minimum bet amount is 10</label>
+              <input
+                type="number"
+                value={betAmount}
+                onChange={handleBetChange}
+                className="w-full bg-[#0F212E] text-white border border-gray-300 rounded-md px-3 py-2"
+              />
+            </div>
+          </div>
+
+          <Button
+            disabled={gaming}
+            onClick={handleSpinClick}
+            className="bg-primary w-full"
+            size="lg"
+          >
+            {gaming ? "Game In Progress" : "Start Game"}
+          </Button>
+        </div>
       </div>
-
-      <Button
-        disabled={gaming}
-        onClick={handleSpinClick}
-        className="bg-primary w-full"
-        size="lg"
-      >
-        {gaming ? "Game In Progress" : "Start Game"}
-      </Button>
     </div>
-  </div>
-</div>
-
   );
 };
 
